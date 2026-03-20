@@ -114,34 +114,48 @@ select.filter:focus{border-color:var(--accent)}select.filter option{background:v
 .ideas-btn:hover{border-color:var(--amber);color:var(--amber)}
 .ideas-btn.on{background:rgba(245,166,35,.12);border-color:var(--amber);color:var(--amber)}
 
-/* ── TIMELINE VIEW ── */
-.timeline-wrap{flex:1;overflow:auto;padding:12px 24px 24px}
-.timeline-wrap::-webkit-scrollbar{width:4px;height:4px}.timeline-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.06);border-radius:4px}
-.phase-bands{display:flex;gap:2px;margin-bottom:16px;position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--bg-top),transparent);padding-bottom:8px}
-.phase-band{flex:1;padding:8px 10px;border-radius:8px;min-width:0;text-align:center;cursor:pointer;transition:opacity .14s}
-.phase-band:hover{opacity:.85}
-.phase-band-name{font-size:var(--ct-xs);font-weight:var(--fw-s);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.phase-band-dates{font-family:'JetBrains Mono',monospace;font-size:var(--fs-xs);opacity:.7;margin-top:2px}
+/* ── TIMELINE VIEW (list-based) ── */
+.timeline-wrap{flex:1;overflow-y:auto;padding:0 24px 24px}
+.timeline-wrap::-webkit-scrollbar{width:4px}.timeline-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.06);border-radius:4px}
 
-/* Week rows */
-.week-row{display:flex;gap:1px;margin-bottom:2px;min-height:44px}
-.week-label{width:90px;flex-shrink:0;padding:8px 8px;font-family:'JetBrains Mono',monospace;font-size:var(--fs-xs);color:var(--c3);display:flex;align-items:flex-start;padding-top:12px}
-.week-days{flex:1;display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
-.day-cell{min-height:42px;background:rgba(255,255,255,.02);border-radius:4px;padding:3px;position:relative;transition:background .12s}
-.day-cell:hover{background:rgba(255,255,255,.05)}
-.day-cell.today{background:rgba(212,82,42,.08);box-shadow:inset 0 0 0 1px rgba(212,82,42,.25)}
-.day-num{font-family:'JetBrains Mono',monospace;font-size:var(--fs-xs);color:var(--c3);padding:2px 4px;opacity:.6}
-.day-head{font-size:var(--fs-xs);font-weight:var(--fw-s);color:var(--c3);text-align:center;padding:4px 0}
+/* Phase divider */
+.phase-div{display:flex;align-items:center;gap:12px;padding:20px 0 10px;position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--bg-top) 60%,transparent)}
+.phase-div:first-child{padding-top:14px}
+.phase-pill{padding:5px 14px;border-radius:20px;font-size:var(--ct-xs);font-weight:var(--fw-s);white-space:nowrap}
+.phase-dates{font-family:'JetBrains Mono',monospace;font-size:var(--fs-xs);color:var(--c3)}
+.phase-line{flex:1;height:1px;background:var(--c4)}
+.phase-count{font-family:'JetBrains Mono',monospace;font-size:var(--fs-xs);color:var(--c3);background:rgba(255,255,255,.05);padding:2px 8px;border-radius:10px}
 
-/* Content cards in timeline */
-.ci{padding:4px 6px;border-radius:4px;font-size:var(--fs-xs);font-weight:var(--fw-m);color:var(--c1);cursor:pointer;margin-top:2px;line-height:1.3;transition:opacity .12s;border-left:3px solid transparent;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ci:hover{opacity:.8}
-.ci-post{background:rgba(88,101,242,.2);border-left-color:var(--blue)}
-.ci-reel{background:rgba(59,165,93,.2);border-left-color:var(--green)}
-.ci-news{background:rgba(245,166,35,.2);border-left-color:var(--amber)}
-.ci-press{background:rgba(155,89,182,.2);border-left-color:var(--purple)}
-.ci-ads{background:rgba(237,66,69,.2);border-left-color:var(--red)}
-.ci-billet{background:rgba(59,165,93,.2);border-left-color:#1abc9c}
+/* Week group label */
+.week-head{display:flex;align-items:center;gap:8px;padding:14px 0 6px}
+.week-label{font-family:'JetBrains Mono',monospace;font-size:var(--fs-xs);font-weight:var(--fw-s);color:var(--c3);text-transform:uppercase;letter-spacing:.05em}
+.week-range{font-family:'JetBrains Mono',monospace;font-size:var(--fs-xs);color:var(--c3);opacity:.5}
+
+/* Content item card */
+.tl-card{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;background:var(--card);border:1px solid var(--c4);border-radius:10px;margin-bottom:6px;cursor:pointer;transition:background .12s,border-color .14s}
+.tl-card:hover{background:var(--card-hover);border-color:rgba(255,255,255,.18)}
+.tl-card.sel{border-color:var(--accent);background:rgba(212,82,42,.06)}
+
+/* Date column */
+.tl-date{width:46px;flex-shrink:0;text-align:center;padding-top:2px}
+.tl-day{font-family:'JetBrains Mono',monospace;font-size:var(--ct-lg);font-weight:var(--fw-b);color:var(--c1);line-height:1}
+.tl-dow{font-family:'JetBrains Mono',monospace;font-size:var(--fs-xs);color:var(--c3);text-transform:uppercase;margin-top:2px}
+
+/* Channel stripe (left accent) */
+.tl-stripe{width:3px;border-radius:2px;flex-shrink:0;align-self:stretch;min-height:32px}
+.str-post{background:var(--blue)}.str-reel{background:var(--green)}.str-news{background:var(--amber)}.str-press{background:var(--purple)}.str-ads{background:var(--red)}
+
+/* Card body */
+.tl-body{flex:1;min-width:0}
+.tl-title{font-size:var(--ct-sm);font-weight:var(--fw-s);color:var(--c1);line-height:1.3;margin-bottom:5px}
+.tl-meta{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.tl-ch{padding:2px 7px;border-radius:3px;font-size:var(--fs-xs);font-weight:var(--fw-s);white-space:nowrap}
+.tl-owner{font-size:var(--fs-xs);color:var(--c3)}
+.tl-status{margin-left:auto;flex-shrink:0}
+
+/* "No date" section */
+.nodate-head{padding:14px 0 8px;font-size:var(--ct-xs);font-weight:var(--fw-s);color:var(--c3);display:flex;align-items:center;gap:8px}
+.nodate-head::after{content:'';flex:1;height:1px;background:var(--c4)}
 
 /* ── KANBAN VIEW ── */
 .kanban-wrap{flex:1;overflow-x:auto;overflow-y:hidden;padding:12px 24px 24px;display:none}
@@ -316,12 +330,8 @@ select.filter{flex:1;min-width:0;font-size:var(--fs-xs);padding:7px 22px 7px 8px
   <div class="filter-count" id="fc"></div>
 </div>
 
-<!-- Timeline view -->
-<div class="timeline-wrap" id="timelineView">
-  <div class="phase-bands" id="phaseBands"></div>
-  <div id="dayHeaders"></div>
-  <div id="weekRows"></div>
-</div>
+<!-- Timeline view (list) -->
+<div class="timeline-wrap" id="timelineView"></div>
 
 <!-- Kanban view -->
 <div class="kanban-wrap" id="kanbanView">
@@ -528,58 +538,75 @@ function filt(){
 }
 
 /* ═══════════════════════════════════════
-   TIMELINE RENDERING
+   TIMELINE RENDERING (list-based)
    ═══════════════════════════════════════ */
 function renderTimeline(data){
-  // Phase bands
-  const pb=document.getElementById('phaseBands');
-  pb.innerHTML=PHASES.map(p=>{
-    const s=parseDate(p.start), e=parseDate(p.end);
-    return `<div class="phase-band" style="background:${p.color};color:${p.text}"><div class="phase-band-name">${p.name}</div><div class="phase-band-dates">${fmtD(p.start)} → ${fmtD(p.end)}</div></div>`;
-  }).join('');
+  const el=document.getElementById('timelineView');
 
-  // Build week rows from earliest to latest date
-  const allDates=data.filter(i=>i.date).map(i=>parseDate(i.date));
-  if(!allDates.length){document.getElementById('weekRows').innerHTML='<div style="padding:40px;text-align:center;color:var(--c3)">Aucun contenu planifié</div>';return}
+  // Split into dated and undated
+  const dated=data.filter(i=>i.date).sort((a,b)=>a.date.localeCompare(b.date));
+  const undated=data.filter(i=>!i.date);
 
-  const minDate=new Date(Math.min(...allDates));
-  const maxDate=new Date(Math.max(...allDates));
-  const startMon=weekMonday(minDate);
-  const endMon=weekMonday(addDays(maxDate,7));
-
-  // Day headers
-  const dayNames=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
-  document.getElementById('dayHeaders').innerHTML=`<div class="week-row"><div class="week-label"></div><div class="week-days">${dayNames.map(d=>`<div class="day-head">${d}</div>`).join('')}</div></div>`;
-
-  // Build item lookup by date string
-  const byDate={};
-  data.forEach(i=>{if(i.date)byDate[i.date]=(byDate[i.date]||[]).push(i)&&byDate[i.date]||(byDate[i.date]=[i])});
+  if(!dated.length && !undated.length){
+    el.innerHTML='<div style="padding:60px 0;text-align:center;color:var(--c3)">Aucun contenu correspond aux filtres</div>';
+    return;
+  }
 
   let html='';
-  let curr=new Date(startMon);
-  const today=dateStr(new Date());
-  const months=['jan','fév','mar','avr','mai','jun','jul','aoû','sep'];
+  const days=['dim','lun','mar','mer','jeu','ven','sam'];
+  const months=['jan','fév','mar','avr','mai','jun','jul','aoû','sep','oct','nov','déc'];
+  const CHAN_STRIPE={'Post':'str-post','Réel':'str-reel','Newsletter':'str-news','Presse':'str-press','Ads':'str-ads'};
+  let currentPhase='';
+  let currentWeek='';
 
-  while(curr<=endMon){
-    const weekStart=new Date(curr);
-    const mon=weekStart.getDate();
-    const monthLabel=months[weekStart.getMonth()];
-    let cells='';
-    for(let d=0;d<7;d++){
-      const dayDate=addDays(weekStart,d);
-      const ds=dateStr(dayDate);
-      const isToday=ds===today;
-      const items=(byDate[ds]||[]);
-      const itemsHtml=items.map(i=>{
-        const cls=CHAN_CLASS[i.channels[0]]||'ci-post';
-        return `<div class="ci ${cls}" onclick="event.stopPropagation();openItem(${i.id})" title="${i.title}">${i.title}</div>`;
-      }).join('');
-      cells+=`<div class="day-cell${isToday?' today':''}"><div class="day-num">${dayDate.getDate()}</div>${itemsHtml}</div>`;
+  dated.forEach(item=>{
+    const dt=new Date(item.date+'T00:00:00');
+    const phase=PHASES.find(p=>p.id===item.phase);
+
+    // Phase divider
+    if(phase && phase.id!==currentPhase){
+      currentPhase=phase.id;
+      currentWeek='';
+      const count=dated.filter(i=>i.phase===phase.id).length;
+      html+=`<div class="phase-div"><span class="phase-pill" style="background:${phase.color};color:${phase.text}">${phase.name}</span><span class="phase-dates">${fmtD(phase.start)} → ${fmtD(phase.end)}</span><div class="phase-line"></div><span class="phase-count">${count}</span></div>`;
     }
-    html+=`<div class="week-row"><div class="week-label">${mon<=7?monthLabel.toUpperCase()+' ':''} S${getWeekNum(weekStart)}</div><div class="week-days">${cells}</div></div>`;
-    curr=addDays(curr,7);
+
+    // Week group
+    const mon=weekMonday(dt);
+    const monStr=dateStr(mon);
+    if(monStr!==currentWeek){
+      currentWeek=monStr;
+      const endW=addDays(mon,6);
+      html+=`<div class="week-head"><span class="week-label">Sem. ${getWeekNum(mon)}</span><span class="week-range">${mon.getDate()} ${months[mon.getMonth()]} → ${endW.getDate()} ${months[endW.getMonth()]}</span></div>`;
+    }
+
+    // Card
+    const stripe=CHAN_STRIPE[item.channels[0]]||'str-post';
+    const chTags=item.channels.map(c=>`<span class="tl-ch ${CHAN_TAG[c]||'ch-post'}">${c}</span>`).join('');
+    const stHtml=stb(item.status);
+
+    html+=`<div class="tl-card${item.id===selectedId?' sel':''}" onclick="openItem(${item.id})">
+      <div class="tl-date"><div class="tl-day">${dt.getDate()}</div><div class="tl-dow">${days[dt.getDay()]}</div></div>
+      <div class="tl-stripe ${stripe}"></div>
+      <div class="tl-body"><div class="tl-title">${item.title}</div><div class="tl-meta">${chTags}<span class="tl-owner">${item.owner}</span><span class="tl-status">${stHtml}</span></div></div>
+    </div>`;
+  });
+
+  // Undated items
+  if(undated.length){
+    html+=`<div class="nodate-head">Sans date (${undated.length})</div>`;
+    undated.forEach(item=>{
+      const stripe=CHAN_STRIPE[item.channels[0]]||'str-post';
+      const chTags=item.channels.map(c=>`<span class="tl-ch ${CHAN_TAG[c]||'ch-post'}">${c}</span>`).join('');
+      html+=`<div class="tl-card${item.id===selectedId?' sel':''}" onclick="openItem(${item.id})">
+        <div class="tl-date"><div class="tl-day">—</div><div class="tl-dow"></div></div>
+        <div class="tl-stripe ${stripe}"></div>
+        <div class="tl-body"><div class="tl-title">${item.title}</div><div class="tl-meta">${chTags}<span class="tl-owner">${item.owner}</span><span class="tl-status">${stb(item.status)}</span></div></div>
+      </div>`;
+    });
   }
-  document.getElementById('weekRows').innerHTML=html;
+
+  el.innerHTML=html;
 }
 
 function getWeekNum(d){const dt=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));dt.setUTCDate(dt.getUTCDate()+4-(dt.getUTCDay()||7));const y=new Date(Date.UTC(dt.getUTCFullYear(),0,1));return Math.ceil(((dt-y)/86400000+1)/7)}
