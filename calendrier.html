@@ -331,6 +331,7 @@ const CHAN_TAG={'Post':'t-post','Réel':'t-reel','Newsletter':'t-news','Presse':
 const CHAN_COL={'Post':'#5865f2','Réel':'#3ba55d','Newsletter':'#f5a623','Presse':'#9b59b6','Ads':'#ed4245'};
 const STATUS_MAP={idee:'ts-idee',brief:'ts-brief',en_cours:'ts-en_cours',validation:'ts-validation',programme:'ts-programme',publie:'ts-publie'};
 const STATUS_LABEL={idee:'Idée',brief:'Brief',en_cours:'En cours',validation:'Validation',programme:'Programmé',publie:'Publié'};
+const TASK_ROLES=['Création visuel','Montage vidéo','Rédaction caption','Coordination','Validation finale','Presse / RP','Community management','Autre'];
 
 const TEAM=[
   {id:51,prenom:'Kenza',nom:'Boulahia',role:'Dir. Com EPK'},
@@ -344,16 +345,16 @@ function getContact(id){return TEAM.find(t=>t.id===id)}
 /* CONTENT — Bordeaux 2026 + EPK 2026 from real spreadsheet data */
 const ITEMS=[
   /* ── BDX: Ed Banger Launch (20 mar) ── */
-  {id:1,title:'Affiche Ed Banger Bordeaux',date:'2026-03-20',channels:['Post'],event:'bdx',owner:'ML',status:'programme',assigned_to:52,caption:'ED BANGER x MADAME LOYAL BORDEAUX',notes:'Post collab visuel fort'},
-  {id:2,title:'Réel Ed Banger',date:'2026-03-20',channels:['Réel','Ads'],event:'bdx',owner:'ML',status:'programme',assigned_to:54,caption:'Bordeaux : Madame Loyal invite le label Ed Banger pour son opening.',notes:'Story + Ads'},
-  {id:3,title:'Presse Gavé Fier / Quoi Faire BDX',date:'2026-03-20',channels:['Presse'],event:'bdx',owner:'ML',status:'programme',assigned_to:55,caption:'Carrousel Ed Banger avec leurs têtes',notes:''},
-  {id:4,title:'Newsletter Ed Banger',date:'2026-03-20',channels:['Newsletter'],event:'bdx',owner:'ML',status:'en_cours',assigned_to:51,caption:'Ed Banger s\'invite à la Warmup Party',notes:'150k contacts Brevo'},
+  {id:1,title:'Affiche Ed Banger Bordeaux',date:'2026-03-20',channels:['Post'],event:'bdx',owner:'ML',status:'programme',fab:'pret',val:'valide',assigned_to:52,crew:[{id:52,task:'Création visuel'},{id:55,task:'Rédaction caption'},{id:53,task:'Community management'}],caption:'ED BANGER x MADAME LOYAL BORDEAUX',notes:'Post collab visuel fort'},
+  {id:2,title:'Réel Ed Banger',date:'2026-03-20',channels:['Réel','Ads'],event:'bdx',owner:'ML',status:'programme',fab:'pret',val:'valide',assigned_to:54,crew:[{id:54,task:'Montage vidéo'},{id:52,task:'Création visuel'},{id:55,task:'Validation finale'}],caption:'Bordeaux : Madame Loyal invite le label Ed Banger pour son opening.',notes:'Story + Ads'},
+  {id:3,title:'Presse Gavé Fier / Quoi Faire BDX',date:'2026-03-20',channels:['Presse'],event:'bdx',owner:'ML',status:'programme',fab:'pret',val:'valide',assigned_to:55,crew:[{id:55,task:'Presse / RP'}],caption:'Carrousel Ed Banger avec leurs têtes',notes:''},
+  {id:4,title:'Newsletter Ed Banger',date:'2026-03-20',channels:['Newsletter'],event:'bdx',owner:'ML',status:'en_cours',fab:'en_cours',val:'en_attente',assigned_to:51,crew:[{id:51,task:'Rédaction caption'},{id:52,task:'Création visuel'}],caption:'Ed Banger s\'invite à la Warmup Party',notes:'150k contacts Brevo'},
   /* ── EPK: Presse digitale (20 mar) ── */
-  {id:5,title:'Presse digitale EPK (Electro News, Guettapen)',date:'2026-03-20',channels:['Presse'],event:'epk',owner:'ML × EPK',status:'programme',assigned_to:55,notes:'Carrousel Electro News + Guettapen'},
-  {id:6,title:'2 articles presse EPK',date:'2026-03-20',channels:['Presse'],event:'epk',owner:'ML × EPK',status:'programme',assigned_to:55,notes:'Article Electro News + Article Guettapen'},
+  {id:5,title:'Presse digitale EPK (Electro News, Guettapen)',date:'2026-03-20',channels:['Presse'],event:'epk',owner:'ML × EPK',status:'programme',fab:'pret',val:'valide',assigned_to:55,crew:[{id:55,task:'Presse / RP'},{id:51,task:'Coordination'}],notes:'Carrousel Electro News + Guettapen'},
+  {id:6,title:'2 articles presse EPK',date:'2026-03-20',channels:['Presse'],event:'epk',owner:'ML × EPK',status:'programme',fab:'pret',val:'valide',assigned_to:55,crew:[{id:55,task:'Presse / RP'}],notes:'Article Electro News + Article Guettapen'},
   /* ── BDX: Artistes (21-24 mar) ── */
-  {id:7,title:'Focus artiste Omaks B2B Eczodia',date:'2026-03-21',channels:['Post'],event:'bdx',owner:'ML',status:'en_cours',assigned_to:53,caption:'Omaks B2B Eczodia, c\'est le B2B surprise officiel',notes:''},
-  {id:8,title:'Réel artiste Omaks B2B Eczodia',date:'2026-03-21',channels:['Réel','Ads'],event:'bdx',owner:'ML',status:'brief',assigned_to:54,caption:'Madame Loyal accueille Omaks en B2B Eczodia',notes:''},
+  {id:7,title:'Focus artiste Omaks B2B Eczodia',date:'2026-03-21',channels:['Post'],event:'bdx',owner:'ML',status:'en_cours',fab:'en_cours',val:'en_attente',assigned_to:53,crew:[{id:53,task:'Community management'},{id:52,task:'Création visuel'},{id:55,task:'Validation finale'}],caption:'Omaks B2B Eczodia, c\'est le B2B surprise officiel',notes:''},
+  {id:8,title:'Réel artiste Omaks B2B Eczodia',date:'2026-03-21',channels:['Réel','Ads'],event:'bdx',owner:'ML',status:'brief',fab:'a_faire',val:'en_attente',assigned_to:54,crew:[{id:54,task:'Montage vidéo'},{id:52,task:'Création visuel'}],caption:'Madame Loyal accueille Omaks en B2B Eczodia',notes:''},
   {id:9,title:'Réel teaser presse EPK (Culturel Paris)',date:'2026-03-21',channels:['Presse','Réel'],event:'epk',owner:'ML × EPK',status:'brief',assigned_to:55,notes:'Annonce Culturel Paris'},
   {id:10,title:'Urgence pré-inscription EPK',date:'2026-03-21',channels:['Post'],event:'epk',owner:'ML × EPK',status:'brief',assigned_to:53,notes:'Plus de X pré-inscrits',billetterie:true},
   {id:11,title:'Focus artiste Zapravka',date:'2026-03-22',channels:['Post'],event:'bdx',owner:'ML',status:'brief',assigned_to:53,caption:'Zapravka rejoint la prog !',notes:''},
@@ -626,12 +627,25 @@ function panelEquipe(item,assignee,teamOpts){
   const v=item||{};
   const ev=EVENTS[v.event];
   const autoEntity=ev?(ev.name.includes('EPK')?'ML × EPK':ev.name.includes('SONORA')?'ML × Sonora':'ML'):'ML';
+  const crew=v.crew||[];
 
-  /* Assignee card */
-  const assigneeCard=assignee?`<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(88,101,242,.06);border:1px solid rgba(88,101,242,.12);border-radius:8px;margin-top:8px">
-    <div class="av av-md" style="background:${grd(assignee.id)}">${ini(assignee.prenom,assignee.nom)}</div>
-    <div style="flex:1"><div style="font-size:var(--ct-sm);font-weight:var(--fw-s);color:var(--c1)">${assignee.prenom} ${assignee.nom}</div><div style="font-size:var(--ct-xs);color:var(--c3)">${assignee.role}</div></div>
-  </div>`:'<div style="padding:10px 12px;border:1.5px dashed var(--c4);border-radius:8px;margin-top:8px;text-align:center;font-size:var(--ct-xs);color:var(--c3)">Non assigné — choisir quelqu\'un ci-dessus</div>';
+  /* Crew cards */
+  const crewHtml=crew.length?crew.map((c,i)=>{
+    const p=getContact(c.id);
+    if(!p) return '';
+    return `<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid var(--c4);margin-bottom:4px" id="crew-${i}">
+      <div class="av av-sm" style="background:${grd(p.id)}">${ini(p.prenom,p.nom)}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:var(--ct-xs);font-weight:var(--fw-s);color:var(--c1)">${p.prenom} ${p.nom}</div>
+        <div style="font-size:var(--fs-xs);color:var(--c3)">${c.task}</div>
+      </div>
+      <div class="tb-b" onclick="this.parentElement.remove()" style="width:24px;height:24px"><svg viewBox="0 0 24 24" style="width:12px;height:12px"><path d="M18 6L6 18M6 6l12 12"/></svg></div>
+    </div>`;
+  }).join(''):'<div style="padding:10px;border:1.5px dashed var(--c4);border-radius:8px;text-align:center;font-size:var(--ct-xs);color:var(--c3)">Aucun membre assigné</div>';
+
+  /* Add form */
+  const personOpts=TEAM.map(t=>`<option value="${t.id}">${t.prenom} ${t.nom} · ${t.role}</option>`).join('');
+  const taskOpts=TASK_ROLES.map(r=>`<option>${r}</option>`).join('');
 
   /* Comments */
   const comments=v.status&&v.status!=='idee'?`
@@ -639,16 +653,23 @@ function panelEquipe(item,assignee,teamOpts){
     <div class="cmt"><div class="av av-sm" style="background:${AG[1]}">${ini('Lola','D')}</div><div class="cmt-body"><div class="cmt-head"><span class="cmt-name">Lola D.</span><span class="cmt-time">19 mar · 14:32</span></div><div class="cmt-text">C'est parti, je fais une première version ce soir.</div></div></div>`:'<div style="color:var(--c3);font-size:var(--ct-xs);padding:6px 0">Aucun commentaire</div>';
 
   return `<div class="rp-panel" id="rp-eq">
-<div class="fs"><div class="fs-t">Qui fait ce contenu ?</div>
-  <div class="f"><label>Assigné à</label><select style="font-size:var(--ct-sm)"><option value="">— Choisir —</option>${teamOpts}</select></div>
-  ${assigneeCard}
+<div class="fs"><div class="fs-t">Équipe sur ce contenu</div>
+  <div id="crewList">${crewHtml}</div>
+  <div style="margin-top:8px;padding:10px 12px;background:rgba(255,255,255,.02);border:1px solid var(--c4);border-radius:8px" id="addCrewForm">
+    <div style="font-size:var(--ct-xs);font-weight:var(--fw-s);color:var(--c2);margin-bottom:6px">Ajouter un membre</div>
+    <div class="fg">
+      <div class="f"><label>Personne</label><select id="addCrewPerson" style="font-size:var(--ct-xs)"><option value="">— Choisir —</option>${personOpts}</select></div>
+      <div class="f"><label>Tâche</label><select id="addCrewTask" style="font-size:var(--ct-xs)">${taskOpts}</select></div>
+    </div>
+    <button onclick="addCrewMember()" style="margin-top:8px;width:100%;padding:7px;border-radius:6px;border:1px solid var(--green);background:rgba(59,165,93,.08);color:var(--green);font-family:'Outfit',sans-serif;font-size:var(--ct-xs);font-weight:var(--fw-s);cursor:pointer;transition:background .14s" onmouseover="this.style.background='rgba(59,165,93,.15)'" onmouseout="this.style.background='rgba(59,165,93,.08)'">+ Ajouter</button>
+  </div>
 </div>
 <div class="fs"><div class="fs-t">Entité</div>
-  <div style="display:flex;align-items:center;gap:8px">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
     <span style="font-size:var(--ct-sm);color:var(--c1);font-weight:var(--fw-s)">${v.owner||autoEntity}</span>
-    <span style="font-size:var(--fs-xs);color:var(--c3)">· auto depuis l'événement</span>
+    <span style="font-size:var(--fs-xs);color:var(--c3)">· auto</span>
   </div>
-  <div class="f" style="margin-top:6px"><label>Modifier manuellement</label><select>${['ML','EPK','ML × EPK','Sonora','Culturel Paris'].map(o=>`<option${o===(v.owner||autoEntity)?' selected':''}>${o}</option>`).join('')}</select></div>
+  <div class="f"><label>Modifier</label><select>${['ML','EPK','ML × EPK','Sonora','Culturel Paris'].map(o=>`<option${o===(v.owner||autoEntity)?' selected':''}>${o}</option>`).join('')}</select></div>
 </div>
 ${v.owner&&v.owner.includes('EPK')?`<div class="fs"><div class="fs-t">Collaborateurs externes</div>
   <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(155,89,182,.06);border:1px solid rgba(155,89,182,.15);border-radius:8px">
@@ -760,6 +781,25 @@ ${hasAds||hasVideo||hasPress?`<div class="fs"><div class="fs-t">Détail contexte
   </div>
 </div>
 </div>`;
+}
+
+function addCrewMember(){
+  const sel=document.getElementById('addCrewPerson');
+  const task=document.getElementById('addCrewTask');
+  if(!sel.value)return;
+  const p=getContact(parseInt(sel.value));
+  if(!p)return;
+  const list=document.getElementById('crewList');
+  // Remove empty state if present
+  const empty=list.querySelector('[style*="dashed"]');
+  if(empty)empty.remove();
+  const card=document.createElement('div');
+  card.style.cssText='display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid var(--c4);margin-bottom:4px';
+  card.innerHTML=`<div class="av av-sm" style="background:${grd(p.id)}">${ini(p.prenom,p.nom)}</div>
+    <div style="flex:1;min-width:0"><div style="font-size:var(--ct-xs);font-weight:var(--fw-s);color:var(--c1)">${p.prenom} ${p.nom}</div><div style="font-size:var(--fs-xs);color:var(--c3)">${task.value}</div></div>
+    <div class="tb-b" onclick="this.parentElement.remove()" style="width:24px;height:24px"><svg viewBox="0 0 24 24" style="width:12px;height:12px"><path d="M18 6L6 18M6 6l12 12"/></svg></div>`;
+  list.appendChild(card);
+  sel.value='';
 }
 
 function copyLink(btn){const url=btn.parentElement.querySelector('.ml-url').textContent;navigator.clipboard.writeText(url).catch(()=>{});const o=btn.textContent;btn.textContent='Copié';setTimeout(()=>btn.textContent=o,1500)}
