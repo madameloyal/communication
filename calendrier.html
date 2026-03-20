@@ -224,6 +224,22 @@ select.filter:focus{border-color:var(--accent)}select.filter option{background:v
 /* Upload zone */
 .upload-zone{border:1.5px dashed var(--c4);border-radius:8px;padding:14px;text-align:center;cursor:pointer;transition:border-color .14s}
 .upload-zone:hover{border-color:var(--accent)}
+/* Charge / workload */
+.wl-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;margin-bottom:4px;cursor:pointer;transition:background .12s;background:rgba(255,255,255,.02)}
+.wl-row:hover{background:rgba(255,255,255,.05)}
+.wl-row.wl-assigned{background:rgba(88,101,242,.06);border:1px solid rgba(88,101,242,.12)}
+.wl-info{flex:1;min-width:0}
+.wl-name{font-size:var(--ct-sm);font-weight:var(--fw-s);color:var(--c1)}
+.wl-role{font-size:var(--fs-xs);color:var(--c3)}
+.wl-right{text-align:right;flex-shrink:0}
+.wl-count{font-family:'JetBrains Mono',monospace;font-size:var(--ct-md);font-weight:var(--fw-b);color:var(--c1)}
+.wl-bar{width:80px;height:5px;border-radius:3px;background:rgba(255,255,255,.06);margin-top:4px;overflow:hidden;margin-left:auto}
+.wl-bar-fill{height:100%;border-radius:3px;transition:width .3s}
+.wl-cap{display:inline-block;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:var(--fw-s);margin-top:3px}
+.wl-cap-green{background:rgba(59,165,93,.14);color:var(--green)}
+.wl-cap-amber{background:rgba(245,166,35,.14);color:var(--amber)}
+.wl-cap-red{background:rgba(237,66,69,.14);color:var(--red)}
+.wl-breakdown{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--c3);margin-top:2px}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 .cc{animation:fadeIn .2s ease both}
 @media(max-width:768px){.left-zone,.right{display:none!important}}
@@ -495,9 +511,9 @@ function openItem(id){
   if(!item){
     document.getElementById('rpT').textContent='Nouveau contenu';
     head.innerHTML='<div class="rp-head-title">Nouveau contenu</div>';
-    tabs.innerHTML=[{id:'ct',label:'Contenu'},{id:'pl',label:'Planning'},{id:'eq',label:'Équipe'},{id:'bu',label:'Budget'}].map((t,i)=>`<div class="rp-tab${i===0?' active':''}" onclick="rpSw('${t.id}',this)">${t.label}</div>`).join('');
+    tabs.innerHTML=[{id:'ct',label:'Contenu'},{id:'pl',label:'Planning'},{id:'eq',label:'Équipe'},{id:'ch',label:'Charge'},{id:'bu',label:'Budget'}].map((t,i)=>`<div class="rp-tab${i===0?' active':''}" onclick="rpSw('${t.id}',this)">${t.label}</div>`).join('');
     const teamOpts=TEAM.map(t=>`<option value="${t.id}">${t.prenom} ${t.nom}</option>`).join('');
-    body.innerHTML=panelContenu({})+panelPlanning({})+panelEquipe({},null,teamOpts)+panelBudget({});
+    body.innerHTML=panelContenu({})+panelPlanning({})+panelEquipe({},null,teamOpts)+panelCharge({})+panelBudget({});
     return;
   }
 
@@ -508,12 +524,12 @@ function openItem(id){
   document.getElementById('rpT').textContent=item.title;
   head.innerHTML=`<div class="rp-head-title">${item.title}</div><div class="rp-head-meta"><span class="tag t-event">${ev?.short||''}</span>${chTags}<span class="t-status ${stCls}">${stLabel}</span><span style="font-family:'JetBrains Mono',monospace;font-size:var(--fs-sm);color:var(--c3)">${fmtDay(item.date)}</span></div>`;
 
-  tabs.innerHTML=[{id:'ct',label:'Contenu'},{id:'pl',label:'Planning'},{id:'eq',label:'Équipe'},{id:'bu',label:'Budget'}].map((t,i)=>`<div class="rp-tab${i===0?' active':''}" onclick="rpSw('${t.id}',this)">${t.label}</div>`).join('');
+  tabs.innerHTML=[{id:'ct',label:'Contenu'},{id:'pl',label:'Planning'},{id:'eq',label:'Équipe'},{id:'ch',label:'Charge'},{id:'bu',label:'Budget'}].map((t,i)=>`<div class="rp-tab${i===0?' active':''}" onclick="rpSw('${t.id}',this)">${t.label}</div>`).join('');
 
   const assignee=item.assigned_to?getContact(item.assigned_to):null;
   const teamOpts=TEAM.map(t=>`<option value="${t.id}"${item.assigned_to===t.id?' selected':''}>${t.prenom} ${t.nom}</option>`).join('');
 
-  body.innerHTML=panelContenu(item)+panelPlanning(item)+panelEquipe(item,assignee,teamOpts)+panelBudget(item);
+  body.innerHTML=panelContenu(item)+panelPlanning(item)+panelEquipe(item,assignee,teamOpts)+panelCharge(item)+panelBudget(item);
   filt();
 }
 
@@ -608,24 +624,14 @@ function panelPlanning(item){
 
 function panelEquipe(item,assignee,teamOpts){
   const v=item||{};
+  const ev=EVENTS[v.event];
+  const autoEntity=ev?(ev.name.includes('EPK')?'ML × EPK':ev.name.includes('SONORA')?'ML × Sonora':'ML'):'ML';
 
-  /* Assignee card with role badge */
-  const assigneeCard=assignee?`<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:8px;margin-top:8px">
+  /* Assignee card */
+  const assigneeCard=assignee?`<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(88,101,242,.06);border:1px solid rgba(88,101,242,.12);border-radius:8px;margin-top:8px">
     <div class="av av-md" style="background:${grd(assignee.id)}">${ini(assignee.prenom,assignee.nom)}</div>
     <div style="flex:1"><div style="font-size:var(--ct-sm);font-weight:var(--fw-s);color:var(--c1)">${assignee.prenom} ${assignee.nom}</div><div style="font-size:var(--ct-xs);color:var(--c3)">${assignee.role}</div></div>
-    <span class="role-badge role-exec">Exécutant</span>
-  </div>`:'';
-
-  /* Team with role context */
-  const teamCards=TEAM.map(t=>{
-    const isResp=t.id===55; /* Greg */
-    const isAssigned=t.id===v.assigned_to;
-    return `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;${isAssigned?'background:rgba(88,101,242,.08);border:1px solid rgba(88,101,242,.15)':'background:rgba(255,255,255,.02)'}">
-      <div class="av av-sm" style="background:${grd(t.id)}">${ini(t.prenom,t.nom)}</div>
-      <div style="flex:1;min-width:0"><div style="font-size:var(--ct-xs);font-weight:var(--fw-s);color:${isAssigned?'var(--c1)':'var(--c2)'}">${t.prenom} ${t.nom}</div><div style="font-size:var(--fs-xs);color:var(--c3)">${t.role}</div></div>
-      ${isResp?'<span class="role-badge role-resp">Dir.</span>':isAssigned?'<span class="role-badge role-exec">Assigné</span>':''}
-    </div>`;
-  }).join('');
+  </div>`:'<div style="padding:10px 12px;border:1.5px dashed var(--c4);border-radius:8px;margin-top:8px;text-align:center;font-size:var(--ct-xs);color:var(--c3)">Non assigné — choisir quelqu\'un ci-dessus</div>';
 
   /* Comments */
   const comments=v.status&&v.status!=='idee'?`
@@ -633,29 +639,94 @@ function panelEquipe(item,assignee,teamOpts){
     <div class="cmt"><div class="av av-sm" style="background:${AG[1]}">${ini('Lola','D')}</div><div class="cmt-body"><div class="cmt-head"><span class="cmt-name">Lola D.</span><span class="cmt-time">19 mar · 14:32</span></div><div class="cmt-text">C'est parti, je fais une première version ce soir.</div></div></div>`:'<div style="color:var(--c3);font-size:var(--ct-xs);padding:6px 0">Aucun commentaire</div>';
 
   return `<div class="rp-panel" id="rp-eq">
-<div class="fs"><div class="fs-t">Responsable & Assignation</div>
-  <div class="fg">
-    <div class="f"><label>Entité</label><select>${['ML','EPK','ML × EPK','Sonora','Culturel Paris'].map(o=>`<option${o===v.owner?' selected':''}>${o}</option>`).join('')}</select></div>
-    <div class="f"><label>Assigné à</label><select><option value="">— Non assigné —</option>${teamOpts}</select></div>
-  </div>
+<div class="fs"><div class="fs-t">Qui fait ce contenu ?</div>
+  <div class="f"><label>Assigné à</label><select style="font-size:var(--ct-sm)"><option value="">— Choisir —</option>${teamOpts}</select></div>
   ${assigneeCard}
-  <div style="font-size:var(--fs-xs);color:var(--c3);margin-top:4px;font-style:italic">Le responsable brief et valide · l'assigné exécute et livre</div>
 </div>
-<div class="fs"><div class="fs-t">Équipe comm</div>
-  <div style="display:flex;flex-direction:column;gap:4px">${teamCards}</div>
+<div class="fs"><div class="fs-t">Entité</div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <span style="font-size:var(--ct-sm);color:var(--c1);font-weight:var(--fw-s)">${v.owner||autoEntity}</span>
+    <span style="font-size:var(--fs-xs);color:var(--c3)">· auto depuis l'événement</span>
+  </div>
+  <div class="f" style="margin-top:6px"><label>Modifier manuellement</label><select>${['ML','EPK','ML × EPK','Sonora','Culturel Paris'].map(o=>`<option${o===(v.owner||autoEntity)?' selected':''}>${o}</option>`).join('')}</select></div>
 </div>
-<div class="fs"><div class="fs-t">Collaborateurs externes</div>
-  <div style="font-size:var(--ct-xs);color:var(--c3);margin-bottom:6px">Partager avec un partenaire ou prestataire</div>
-  <div class="ml-box"><div class="ml-url">app.festiflow.com/share/${v.id||'…'}/xK9m2</div><button class="ml-btn ml-copy" onclick="copyLink(this)">Copier</button><button class="ml-btn ml-send">Envoyer</button></div>
-  ${v.owner&&v.owner.includes('EPK')?`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(155,89,182,.06);border:1px solid rgba(155,89,182,.15);border-radius:8px;margin-top:8px">
+${v.owner&&v.owner.includes('EPK')?`<div class="fs"><div class="fs-t">Collaborateurs externes</div>
+  <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(155,89,182,.06);border:1px solid rgba(155,89,182,.15);border-radius:8px">
     <div style="width:28px;height:28px;border-radius:6px;background:rgba(155,89,182,.15);display:flex;align-items:center;justify-content:center;font-size:var(--fs-xs);font-weight:var(--fw-b);color:#c490e0;flex-shrink:0">EP</div>
-    <div style="flex:1"><div style="font-size:var(--ct-xs);font-weight:var(--fw-s);color:var(--c1)">Équipe EPK</div><div style="font-size:var(--fs-xs);color:var(--c3)">Co-production · lien partagé actif</div></div>
+    <div style="flex:1"><div style="font-size:var(--ct-xs);font-weight:var(--fw-s);color:var(--c1)">Équipe EPK</div><div style="font-size:var(--fs-xs);color:var(--c3)">Co-production · lien partagé</div></div>
     <span class="role-badge role-ext">Externe</span>
-  </div>`:''}
-</div>
+  </div>
+  <div class="ml-box" style="margin-top:6px"><div class="ml-url">app.festiflow.com/share/${v.id||'…'}/xK9m2</div><button class="ml-btn ml-copy" onclick="copyLink(this)">Copier</button><button class="ml-btn ml-send">Envoyer</button></div>
+</div>`:''}
 <div class="fs"><div class="fs-t">Discussion</div>
   ${comments}
-  <div style="display:flex;gap:6px;margin-top:8px"><input placeholder="Ajouter un commentaire…" style="flex:1;padding:7px 10px;border:1px solid var(--c4);border-radius:6px;background:var(--frame-input);font-family:'Outfit',sans-serif;font-size:var(--ct-xs);color:var(--c1);outline:none"><button style="padding:7px 12px;border-radius:6px;border:none;background:var(--accent);color:#fff;font-family:'Outfit',sans-serif;font-size:var(--ct-xs);font-weight:var(--fw-s);cursor:pointer">Envoyer</button></div>
+  <div style="display:flex;gap:6px;margin-top:8px"><input placeholder="Écrire un message…" style="flex:1;padding:7px 10px;border:1px solid var(--c4);border-radius:6px;background:var(--frame-input);font-family:'Outfit',sans-serif;font-size:var(--ct-xs);color:var(--c1);outline:none"><button style="padding:7px 12px;border-radius:6px;border:none;background:var(--accent);color:#fff;font-family:'Outfit',sans-serif;font-size:var(--ct-xs);font-weight:var(--fw-s);cursor:pointer">Envoyer</button></div>
+</div>
+</div>`;
+}
+
+function panelCharge(item){
+  const v=item||{};
+  const today='2026-03-20';
+  const weekEnd=new Date(today+'T00:00:00');weekEnd.setDate(weekEnd.getDate()+7);
+  const weStr=weekEnd.toISOString().split('T')[0];
+  const thisWeekItems=ITEMS.filter(i=>i.date&&i.date>=today&&i.date<weStr);
+
+  const rows=TEAM.map(t=>{
+    const myTasks=thisWeekItems.filter(i=>i.assigned_to===t.id);
+    const total=myTasks.length;
+    const done=myTasks.filter(i=>i.status==='publie'||i.status==='programme').length;
+    const enCours=myTasks.filter(i=>i.status==='en_cours').length;
+    const brief=myTasks.filter(i=>i.status==='brief').length;
+    const idee=myTasks.filter(i=>i.status==='idee').length;
+    const pct=total>0?Math.round((done/total)*100):0;
+    const cap=total<=2?'green':total<=4?'amber':'red';
+    const capLabel=total<=2?'Dispo':total<=4?'Chargé':'Surchargé';
+    const isAssigned=t.id===v.assigned_to;
+
+    const barColor=cap==='green'?'var(--green)':cap==='amber'?'var(--amber)':'var(--red)';
+    const fillPct=total>0?Math.min(total*16,100):0;
+
+    return `<div class="wl-row${isAssigned?' wl-assigned':''}" onclick="document.getElementById('si').value='';document.getElementById('evf').value='';document.getElementById('chf').value='';document.getElementById('stf').value='';filt()">
+      <div class="av av-md" style="background:${grd(t.id)}">${ini(t.prenom,t.nom)}</div>
+      <div class="wl-info">
+        <div class="wl-name">${t.prenom} ${t.nom}${isAssigned?' <span style="font-size:var(--fs-xs);color:var(--blue);font-weight:var(--fw-r)">· assigné ici</span>':''}</div>
+        <div class="wl-role">${t.role}</div>
+        <div class="wl-breakdown">${done} fait · ${enCours} en cours · ${brief} brief · ${idee} idée</div>
+      </div>
+      <div class="wl-right">
+        <div class="wl-count">${total}</div>
+        <div style="font-size:9px;color:var(--c3)">cette sem.</div>
+        <div class="wl-bar"><div class="wl-bar-fill" style="width:${fillPct}%;background:${barColor}"></div></div>
+        <div class="wl-cap wl-cap-${cap}">${capLabel}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  /* Unassigned count */
+  const unassigned=thisWeekItems.filter(i=>!i.assigned_to).length;
+
+  /* Overall stats */
+  const totalWeek=thisWeekItems.length;
+  const totalAssigned=thisWeekItems.filter(i=>i.assigned_to).length;
+
+  return `<div class="rp-panel" id="rp-ch">
+<div class="fs"><div class="fs-t">Charge équipe · semaine du ${fmtDay(today)}</div>
+  <div style="display:flex;gap:10px;margin-bottom:12px">
+    <div style="flex:1;padding:8px 10px;background:rgba(255,255,255,.04);border-radius:6px;text-align:center">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:var(--ct-lg);font-weight:var(--fw-s);color:var(--c1)">${totalWeek}</div>
+      <div style="font-size:var(--fs-xs);color:var(--c3)">contenus</div>
+    </div>
+    <div style="flex:1;padding:8px 10px;background:rgba(255,255,255,.04);border-radius:6px;text-align:center">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:var(--ct-lg);font-weight:var(--fw-s);color:var(--green)">${totalAssigned}</div>
+      <div style="font-size:var(--fs-xs);color:var(--c3)">assignés</div>
+    </div>
+    <div style="flex:1;padding:8px 10px;background:rgba(255,255,255,.04);border-radius:6px;text-align:center">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:var(--ct-lg);font-weight:var(--fw-s);color:${unassigned?'var(--red)':'var(--green)'}">${unassigned}</div>
+      <div style="font-size:var(--fs-xs);color:var(--c3)">non assignés</div>
+    </div>
+  </div>
+  ${rows}
 </div>
 </div>`;
 }
