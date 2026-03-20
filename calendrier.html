@@ -589,11 +589,9 @@ function panelPlanning(item){
   return `<div class="rp-panel" id="rp-pl">
 <div class="fs"><div class="fs-t">Dates</div>
   <div class="f" style="margin-bottom:10px"><label>Date de publication</label><input type="date" value="${v.date||''}"></div>
-  <div class="fg">
-    <div class="f"><label>Heure</label><input type="time" value="${v.time||'18:00'}"></div>
-    <div class="f"><label>Priorité</label><select>${['Normal','Urgent','Bloquant'].map(p=>`<option${(v.priority||'Normal')===p?' selected':''}>${p}</option>`).join('')}</select></div>
-  </div>
-  <div class="f" style="margin-top:10px"><label>Deadline interne</label><input type="date" value="${v.deadline||''}"></div>
+  <div class="f" style="margin-bottom:10px"><label>Heure de publication</label><input type="time" value="${v.time||'18:00'}"></div>
+  <div class="f" style="margin-bottom:10px"><label>Deadline interne</label><input type="date" value="${v.deadline||''}"></div>
+  <div class="f"><label>Priorité</label><select>${['Normal','Urgent','Bloquant'].map(p=>`<option${(v.priority||'Normal')===p?' selected':''}>${p}</option>`).join('')}</select></div>
 </div>
 <div class="fs"><div class="fs-t">Pipeline</div>
   <div class="pipeline">
