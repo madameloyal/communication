@@ -98,10 +98,10 @@ select.filter:focus{border-color:var(--accent)}select.filter option{background:v
 .feed-wrap::-webkit-scrollbar{width:4px}.feed-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.06);border-radius:4px}
 
 /* Day header (Registre section-label pattern) */
-.day-label{font-size:var(--fs-xs);font-weight:var(--fw-s);color:var(--c3);text-transform:uppercase;letter-spacing:.1em;padding:10px 0 6px;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:5;background:linear-gradient(180deg,var(--bg-top) 60%,transparent)}
+.day-label{font-size:var(--fs-xs);font-weight:var(--fw-s);color:var(--c3);text-transform:uppercase;letter-spacing:.1em;padding:10px 0 6px;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:5;background:var(--bg-bot)}
 .day-label:first-child{padding-top:4px}
 .day-label::after{content:'';flex:1;height:1px;background:var(--c4)}
-.day-today{color:var(--accent);background:linear-gradient(180deg,var(--bg-top) 60%,transparent)}
+.day-today{color:var(--accent);background:var(--bg-bot)}
 
 /* Content card (Registre slot pattern) */
 .cc{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--frame-card);border-radius:10px;margin-bottom:4px;cursor:pointer;transition:all .12s;border:1px solid transparent}
