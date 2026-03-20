@@ -209,7 +209,6 @@ select.filter:focus{border-color:var(--accent)}select.filter option{background:v
 <div class="rail"><div class="rail-top"><div class="rail-logo"><img src="https://madameloyal.github.io/homepage/LOGO_ROND_JAUNE.png" alt="ML"></div></div><div class="rail-icons">
 <div class="rail-tous on" onclick="swEv(null,this)" title="Tous les contenus">ALL</div>
 <div class="rail-sep"></div>
-<div class="rail-ev-wrap" onclick="swEv('xxl',this)" data-ev="xxl"><div class="rail-event" title="Paris XXL 2026"><span>PA</span></div></div>
 <div class="rail-ev-wrap" onclick="swEv('bdx',this)" data-ev="bdx"><div class="rail-event" title="Bordeaux ML × SONORA 2026"><span>BO</span></div></div>
 <div class="rail-ev-wrap" onclick="swEv('epk',this)" data-ev="epk"><div class="rail-event" title="ML × EPK 2026"><span>EP</span></div></div>
 <div class="rail-sep"></div>
@@ -260,7 +259,7 @@ select.filter:focus{border-color:var(--accent)}select.filter option{background:v
   <div id="topCards"></div>
   <div class="toolbar">
     <div class="search-wrap"><svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Rechercher contenu…" id="si" oninput="filt()"></div>
-    <select class="filter" id="evf" onchange="filt()"><option value="">Événement</option><option value="xxl">Paris XXL</option><option value="bdx">Bordeaux</option><option value="epk">EPK</option></select>
+    <select class="filter" id="evf" onchange="filt()"><option value="">Événement</option><option value="bdx">Bordeaux</option><option value="epk">EPK</option></select>
     <select class="filter" id="chf" onchange="filt()"><option value="">Canal</option><option value="Post">Post</option><option value="Réel">Réel</option><option value="Newsletter">Newsletter</option><option value="Presse">Presse</option><option value="Ads">Ads</option></select>
     <select class="filter" id="stf" onchange="filt()"><option value="">Statut</option><option value="idee">Idée</option><option value="brief">Brief</option><option value="en_cours">En cours</option><option value="validation">Validation</option><option value="programme">Programmé</option><option value="publie">Publié</option></select>
     <div class="filter-count" id="fc"></div>
@@ -281,8 +280,7 @@ select.filter:focus{border-color:var(--accent)}select.filter option{background:v
 
 <script>
 const EVENTS={
-  xxl:{id:'xxl',name:'Paris XXL 2026',short:'PA26',color:'#d4522a'},
-  bdx:{id:'bdx',name:'Bordeaux 2026',short:'BDX26',color:'#5865f2'},
+  bdx:{id:'bdx',name:'Bordeaux ML × SONORA 2026',short:'BDX26',color:'#5865f2'},
   epk:{id:'epk',name:'ML × EPK 2026',short:'EPK26',color:'#9b59b6'},
 };
 const AG=['linear-gradient(140deg,#d4522a,#7d1e0a)','linear-gradient(140deg,#5865f2,#3644c4)','linear-gradient(140deg,#3ba55d,#1e6b3a)','linear-gradient(140deg,#f5a623,#c07a10)','linear-gradient(140deg,#9b59b6,#6d2d8a)','linear-gradient(140deg,#ed4245,#a82d2f)'];
@@ -301,33 +299,45 @@ const TEAM=[
 ];
 function getContact(id){return TEAM.find(t=>t.id===id)}
 
-/* CONTENT — cross-event feed data from all spreadsheets */
+/* CONTENT — Bordeaux 2026 + EPK 2026 from real spreadsheet data */
 const ITEMS=[
-  {id:1,title:'Annonce Event Sonora x ML Paris XXL',date:'2026-03-18',channels:['Post'],event:'xxl',owner:'ML',status:'programme',assigned_to:55,notes:'Technobus aftermovie'},
-  {id:2,title:'Carrousel Sonora x ML Paris XXL',date:'2026-03-19',channels:['Post'],event:'xxl',owner:'ML × Sonora',status:'programme',assigned_to:52,notes:'Carrousel Sonora x ML'},
-  {id:3,title:'Affiche Ed Banger Bordeaux',date:'2026-03-20',channels:['Post'],event:'bdx',owner:'ML',status:'programme',assigned_to:52,notes:'Ed Banger x Madame Loyal Bordeaux'},
-  {id:4,title:'Réel Ed Banger',date:'2026-03-20',channels:['Réel','Ads'],event:'bdx',owner:'ML',status:'programme',assigned_to:54,notes:'Bordeaux : ML invite le label Ed Banger'},
-  {id:5,title:'Presse Gavé Fier / Quoi Faire BDX',date:'2026-03-20',channels:['Presse'],event:'bdx',owner:'EPK',status:'programme',assigned_to:55,notes:'Carrousel Ed Banger avec leurs têtes'},
-  {id:6,title:'Newsletter Ed Banger',date:'2026-03-20',channels:['Newsletter'],event:'bdx',owner:'ML',status:'en_cours',assigned_to:51,notes:'Ed Banger s\'invite à la Warmup Party'},
-  {id:7,title:'Focus artiste Omaks B2B Eczodia',date:'2026-03-21',channels:['Post'],event:'bdx',owner:'ML',status:'en_cours',assigned_to:53,notes:''},
-  {id:8,title:'Réel artiste Omaks B2B Eczodia',date:'2026-03-21',channels:['Réel','Ads'],event:'bdx',owner:'ML',status:'brief',assigned_to:54,notes:''},
-  {id:9,title:'Focus artiste Zapravka',date:'2026-03-22',channels:['Post'],event:'bdx',owner:'ML',status:'brief',assigned_to:53,notes:''},
-  {id:10,title:'Réel artiste Zapravka',date:'2026-03-22',channels:['Réel','Ads'],event:'bdx',owner:'ML',status:'brief',assigned_to:54,notes:''},
-  {id:11,title:'Focus Sköne B2B Le Wanski',date:'2026-03-23',channels:['Post'],event:'bdx',owner:'ML',status:'idee',notes:''},
-  {id:12,title:'Focus Nikolina / 6ejou / Dyen',date:'2026-03-24',channels:['Post'],event:'bdx',owner:'ML',status:'idee',notes:''},
-  {id:13,title:'Annonce Event collab EPK (visuel fort)',date:'2026-03-25',channels:['Post'],event:'epk',owner:'ML × EPK',status:'brief',assigned_to:52,notes:'Co-branding'},
-  {id:14,title:'AFFICHE GLOBALE EPK (jeu concours)',date:'2026-03-26',channels:['Post'],event:'epk',owner:'ML × EPK',status:'brief',assigned_to:52,notes:''},
-  {id:15,title:'Newsletter EPK (150k contacts)',date:'2026-03-26',channels:['Newsletter'],event:'epk',owner:'ML × EPK',status:'brief',assigned_to:51,notes:'Save the date'},
-  {id:16,title:'Réel teaser co branding EPK',date:'2026-03-27',channels:['Réel','Ads'],event:'epk',owner:'ML × EPK',status:'idee',assigned_to:54,notes:''},
-  {id:17,title:'Presse digitale EPK (Electro News, Guettapen)',date:'2026-03-20',channels:['Presse'],event:'epk',owner:'EPK',status:'programme',assigned_to:55,notes:''},
-  {id:18,title:'Carrousel Vibes LM_PROD (Sonora)',date:'2026-03-25',channels:['Post'],event:'bdx',owner:'Sonora',status:'idee',notes:''},
-  {id:19,title:'Réel Sonora',date:'2026-03-30',channels:['Réel'],event:'bdx',owner:'Sonora',status:'idee',notes:''},
-  {id:20,title:'Newsletter Sonora Bordeaux',date:'2026-04-02',channels:['Newsletter'],event:'bdx',owner:'Sonora',status:'idee',notes:''},
-  {id:21,title:'J-2 ouverture billetterie EPK',date:'2026-03-31',channels:['Post'],event:'epk',owner:'ML × EPK',status:'idee',notes:'',billetterie:true},
-  {id:22,title:'BILLETTERIE OUVERTE EPK',date:'2026-04-02',channels:['Réel','Post'],event:'epk',owner:'ML × EPK',status:'idee',notes:'Dice, Shotgun, Pass Culture',billetterie:true},
-  {id:23,title:'Première annonce artistes EPK',date:'2026-04-07',channels:['Post','Newsletter'],event:'epk',owner:'ML × EPK',status:'idee',notes:''},
-  {id:24,title:'Ouverture pass culture EPK',date:'2026-05-05',channels:['Réel'],event:'epk',owner:'ML × EPK',status:'idee',notes:''},
-  {id:25,title:'Stress selling early EPK',date:'2026-05-14',channels:['Post','Réel'],event:'epk',owner:'ML × EPK',status:'idee',billetterie:true,notes:''},
+  /* ── BDX: Ed Banger Launch (20 mar) ── */
+  {id:1,title:'Affiche Ed Banger Bordeaux',date:'2026-03-20',channels:['Post'],event:'bdx',owner:'ML',status:'programme',assigned_to:52,caption:'ED BANGER x MADAME LOYAL BORDEAUX',notes:'Post collab visuel fort'},
+  {id:2,title:'Réel Ed Banger',date:'2026-03-20',channels:['Réel','Ads'],event:'bdx',owner:'ML',status:'programme',assigned_to:54,caption:'Bordeaux : Madame Loyal invite le label Ed Banger pour son opening.',notes:'Story + Ads'},
+  {id:3,title:'Presse Gavé Fier / Quoi Faire BDX',date:'2026-03-20',channels:['Presse'],event:'bdx',owner:'ML',status:'programme',assigned_to:55,caption:'Carrousel Ed Banger avec leurs têtes',notes:''},
+  {id:4,title:'Newsletter Ed Banger',date:'2026-03-20',channels:['Newsletter'],event:'bdx',owner:'ML',status:'en_cours',assigned_to:51,caption:'Ed Banger s\'invite à la Warmup Party',notes:'150k contacts Brevo'},
+  /* ── EPK: Presse digitale (20 mar) ── */
+  {id:5,title:'Presse digitale EPK (Electro News, Guettapen)',date:'2026-03-20',channels:['Presse'],event:'epk',owner:'ML × EPK',status:'programme',assigned_to:55,notes:'Carrousel Electro News + Guettapen'},
+  {id:6,title:'2 articles presse EPK',date:'2026-03-20',channels:['Presse'],event:'epk',owner:'ML × EPK',status:'programme',assigned_to:55,notes:'Article Electro News + Article Guettapen'},
+  /* ── BDX: Artistes (21-24 mar) ── */
+  {id:7,title:'Focus artiste Omaks B2B Eczodia',date:'2026-03-21',channels:['Post'],event:'bdx',owner:'ML',status:'en_cours',assigned_to:53,caption:'Omaks B2B Eczodia, c\'est le B2B surprise officiel',notes:''},
+  {id:8,title:'Réel artiste Omaks B2B Eczodia',date:'2026-03-21',channels:['Réel','Ads'],event:'bdx',owner:'ML',status:'brief',assigned_to:54,caption:'Madame Loyal accueille Omaks en B2B Eczodia',notes:''},
+  {id:9,title:'Réel teaser presse EPK (Culturel Paris)',date:'2026-03-21',channels:['Presse','Réel'],event:'epk',owner:'ML × EPK',status:'brief',assigned_to:55,notes:'Annonce Culturel Paris'},
+  {id:10,title:'Urgence pré-inscription EPK',date:'2026-03-21',channels:['Post'],event:'epk',owner:'ML × EPK',status:'brief',assigned_to:53,notes:'Plus de X pré-inscrits',billetterie:true},
+  {id:11,title:'Focus artiste Zapravka',date:'2026-03-22',channels:['Post'],event:'bdx',owner:'ML',status:'brief',assigned_to:53,caption:'Zapravka rejoint la prog !',notes:''},
+  {id:12,title:'Réel artiste Zapravka',date:'2026-03-22',channels:['Réel','Ads'],event:'bdx',owner:'ML',status:'brief',assigned_to:54,notes:'Réel Zapravka'},
+  {id:13,title:'Post carrousel collab 2 univers EPK',date:'2026-03-22',channels:['Post'],event:'epk',owner:'ML × EPK',status:'idee',assigned_to:52,notes:'Post photos 2 univers'},
+  {id:14,title:'Focus Sköne B2B Le Wanski',date:'2026-03-23',channels:['Post'],event:'bdx',owner:'ML',status:'idee',notes:'Sköne B2B Le Wanski rejoignent la prog !'},
+  {id:15,title:'Réel artiste n°1 EPK',date:'2026-03-23',channels:['Réel'],event:'epk',owner:'ML',status:'idee',assigned_to:54,notes:'Réel collab Electro News'},
+  {id:16,title:'Focus Nikolina / 6ejou / Dyen',date:'2026-03-24',channels:['Post'],event:'bdx',owner:'ML',status:'idee',notes:''},
+  {id:17,title:'RDV demain répartition artistes EPK',date:'2026-03-24',channels:['Post'],event:'epk',owner:'ML × EPK',status:'idee',notes:'Post photos 2 univers'},
+  /* ── EPK: Annonce (25-27 mar) ── */
+  {id:18,title:'Annonce Event collab EPK (visuel fort + co-branding)',date:'2026-03-25',channels:['Post'],event:'epk',owner:'ML × EPK',status:'brief',assigned_to:52,notes:'Carrousel Annonce Event'},
+  {id:19,title:'AFFICHE RÉPARTITION ARTISTES J1 et J2 EPK',date:'2026-03-25',channels:['Post'],event:'epk',owner:'ML × EPK',status:'idee',notes:'Nombre pré-inscrits'},
+  {id:20,title:'Carrousel Vibes LM_PROD (Sonora)',date:'2026-03-25',channels:['Post'],event:'bdx',owner:'Sonora',status:'idee',notes:''},
+  {id:21,title:'AFFICHE GLOBALE EPK (jeu concours + pré-inscription)',date:'2026-03-26',channels:['Post'],event:'epk',owner:'ML × EPK',status:'brief',assigned_to:52,notes:'Jeu Concours'},
+  {id:22,title:'Explications Pass EPK',date:'2026-03-26',channels:['Post'],event:'epk',owner:'ML × EPK',status:'idee',notes:'Tous nos Pass'},
+  {id:23,title:'Newsletter EPK (150k contacts)',date:'2026-03-27',channels:['Newsletter'],event:'epk',owner:'ML × EPK',status:'brief',assigned_to:51,caption:'ML x Elektric Park : Save the date.',notes:''},
+  {id:24,title:'Réel teaser co branding EPK',date:'2026-03-27',channels:['Réel','Ads'],event:'epk',owner:'ML × EPK',status:'idee',assigned_to:54,notes:'Réel Annonce évent'},
+  {id:25,title:'Réel artiste n°2 EPK',date:'2026-03-27',channels:['Réel'],event:'epk',owner:'ML × EPK',status:'idee',notes:''},
+  /* ── Late March / April ── */
+  {id:26,title:'Réel Sonora Bordeaux',date:'2026-03-30',channels:['Réel'],event:'bdx',owner:'Sonora',status:'idee',notes:''},
+  {id:27,title:'J-2 ouverture billetterie EPK',date:'2026-03-31',channels:['Post'],event:'epk',owner:'ML × EPK',status:'idee',notes:'',billetterie:true},
+  {id:28,title:'Pass Culture EPK',date:'2026-04-01',channels:['Post'],event:'epk',owner:'ML × EPK',status:'idee',notes:'Pass Culture',billetterie:true},
+  {id:29,title:'Newsletter Sonora Bordeaux',date:'2026-04-02',channels:['Newsletter'],event:'bdx',owner:'Sonora',status:'idee',notes:''},
+  {id:30,title:'BILLETTERIE OUVERTE EPK',date:'2026-04-02',channels:['Réel','Post'],event:'epk',owner:'ML × EPK',status:'idee',caption:'Dice, Shotgun, Pass Culture',notes:'Réel + Post billetterie ouverte',billetterie:true},
+  {id:31,title:'Urgence billetterie Phase 2 bientôt écoulée EPK',date:'2026-04-03',channels:['Post'],event:'epk',owner:'ML × EPK',status:'idee',notes:'Jauge billetterie',billetterie:true},
+  {id:32,title:'Réel artiste n°3 EPK',date:'2026-04-05',channels:['Réel'],event:'epk',owner:'ML × EPK',status:'idee',notes:''},
 ];
 
 /* STATE */
@@ -370,7 +380,7 @@ function buildTopCards(){
   document.getElementById('topCards').innerHTML=`<div class="top-cards">
     <div class="tc"><div class="tc-label">Cette semaine</div><div class="tc-row"><div class="tc-val">${thisWeek.length}</div><div class="tc-unit">contenus planifiés</div></div><div class="tc-sub">${postCount} Posts · ${reelCount} Réels · ${newsCount} Newsletters · ${pressCount} Presse</div></div>
     <div class="tc"><div class="tc-label">À traiter</div><div class="tc-row"><div class="tc-val" style="color:${overdue?'var(--red)':'var(--green)'}">${overdue}</div><div class="tc-unit">en retard</div></div><div class="tc-sub" style="color:var(--amber)">${toValidate} à valider · ${inProd} en production</div></div>
-    <div class="tc-note"><div class="tc-note-text">« Semaine chargée : 3 événements en parallèle. Priorité Bordeaux Ed Banger + EPK co-branding. Greg gère la presse, Lola les visuels. »</div><div class="tc-note-author">Greg · Dir. Com · 20/03/2026</div></div>
+    <div class="tc-note"><div class="tc-note-text">« Semaine clé : lancement Ed Banger Bordeaux + presse EPK en parallèle. Greg gère les médias, Lola tous les visuels, Jules les réels. Kenza coordonne EPK. »</div><div class="tc-note-author">Greg · Dir. Com · 20/03/2026</div></div>
   </div>`;
 }
 
