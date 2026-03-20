@@ -205,6 +205,13 @@ select.filter:focus{border-color:var(--accent)}select.filter option{background:v
 .r-empty svg{width:44px;height:44px;fill:none;stroke:var(--c4);stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round}
 .r-empty p{font-size:var(--ct-sm);color:var(--c3);line-height:1.5}
 
+/* Tabs (from contacts pattern) */
+.rp-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,.06);padding:0 18px;flex-shrink:0;overflow-x:auto;gap:0}
+.rp-tabs::-webkit-scrollbar{display:none}
+.rp-tab{padding:11px 0;margin-right:14px;font-size:var(--ct-xs);font-weight:var(--fw-s);color:var(--c3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color .15s,border-color .15s;text-transform:uppercase;letter-spacing:.05em}
+.rp-tab:hover{color:var(--c1)}.rp-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.rp-panel{display:none}.rp-panel.active{display:block}
+
 /* Detail panel */
 .rp-body{flex:1;overflow-y:auto;padding:16px 18px}.rp-body::-webkit-scrollbar{width:3px}.rp-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.06);border-radius:3px}
 .fs{margin-bottom:20px}
@@ -248,6 +255,23 @@ select.filter:focus{border-color:var(--accent)}select.filter option{background:v
 
 /* Status select styling */
 .status-sel{padding:5px 10px;border-radius:16px;font-size:var(--ct-xs);font-weight:var(--fw-s);border:none;cursor:pointer;outline:none}
+
+/* Magic link */
+.ml-box{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--frame-input);border:1px solid var(--c4);border-radius:8px;margin-top:8px}
+.ml-url{flex:1;font-family:'JetBrains Mono',monospace;font-size:var(--ct-xs);color:var(--c3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ml-copy{background:var(--accent);color:#fff;border:none;padding:5px 10px;border-radius:5px;font-family:'Outfit',sans-serif;font-size:var(--fs-xs);font-weight:var(--fw-b);cursor:pointer;white-space:nowrap;transition:opacity .15s}
+.ml-copy:hover{opacity:.8}
+.ml-send{background:none;border:1px solid var(--c4);color:var(--c3);padding:5px 10px;border-radius:5px;font-family:'Outfit',sans-serif;font-size:var(--fs-xs);font-weight:var(--fw-s);cursor:pointer;white-space:nowrap;transition:all .14s}
+.ml-send:hover{border-color:var(--green);color:var(--green)}
+
+/* Comment thread */
+.cmt{display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--c4)}.cmt:last-child{border-bottom:none}
+.cmt-av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;color:#fff;flex-shrink:0}
+.cmt-body{flex:1;min-width:0}
+.cmt-head{display:flex;gap:6px;align-items:baseline}
+.cmt-name{font-size:var(--ct-xs);font-weight:var(--fw-s);color:var(--c1)}
+.cmt-time{font-family:'JetBrains Mono',monospace;font-size:var(--fs-xs);color:var(--c3)}
+.cmt-text{font-size:var(--ct-xs);color:var(--c2);margin-top:3px;line-height:1.4}
 
 /* ── TEAM MANAGER PANEL ── */
 .team-panel{display:none;position:absolute;top:100%;right:0;width:340px;background:var(--frame);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:0;z-index:100;box-shadow:0 12px 40px rgba(0,0,0,.4);overflow:hidden;margin-top:6px}
@@ -384,6 +408,7 @@ select.filter{flex:1;min-width:0;font-size:var(--fs-xs);padding:7px 22px 7px 8px
 <div id="rActive" style="display:none;flex-direction:column;height:100%">
 <div class="rt-head"><div class="rt-title" id="rpT">Contenu</div><div class="rt-btns"><div class="tb-b" onclick="closeItem()"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></div></div></div>
 <div class="rp-head" id="rpHead"></div>
+<div class="rp-tabs" id="rpTabs"></div>
 <div class="rp-body" id="rpBody"></div>
 <div class="rp-footer"><button class="btn-sm-d">Supprimer</button><button class="btn-primary" onclick="closeItem()"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Enregistrer</button></div>
 </div></div>
@@ -717,8 +742,12 @@ function renderIdeas(){
 }
 
 /* ═══════════════════════════════════════
-   RIGHT PANEL — item detail
+   RIGHT PANEL — tabbed item detail
    ═══════════════════════════════════════ */
+const AG=['linear-gradient(140deg,#d4522a,#7d1e0a)','linear-gradient(140deg,#5865f2,#3644c4)','linear-gradient(140deg,#3ba55d,#1e6b3a)','linear-gradient(140deg,#f5a623,#c07a10)','linear-gradient(140deg,#9b59b6,#6d2d8a)','linear-gradient(140deg,#ed4245,#a82d2f)'];
+
+function rpSw(p,el){document.querySelectorAll('.rp-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.rp-panel').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');const panel=document.getElementById('rp-'+p);if(panel)panel.classList.add('active')}
+
 function openItem(id){
   const r=document.getElementById('right');r.classList.remove('shut');
   document.getElementById('rEmpty').style.display='none';
@@ -728,10 +757,12 @@ function openItem(id){
   const item=id?ITEMS.find(i=>i.id===id):null;
   const head=document.getElementById('rpHead');
   const body=document.getElementById('rpBody');
+  const tabs=document.getElementById('rpTabs');
 
   if(!item){
     document.getElementById('rpT').textContent='Nouveau contenu';
     head.innerHTML='<div class="rp-head-title">Nouveau contenu</div>';
+    tabs.innerHTML='';
     body.innerHTML=buildNewItemForm();
     return;
   }
@@ -740,29 +771,114 @@ function openItem(id){
   const channelTags=item.channels.map(c=>`<span class="ch ${CHAN_TAG[c]||'ch-post'}">${c}</span>`).join('');
   head.innerHTML=`<div class="rp-head-title">${item.title}</div><div class="rp-head-meta">${channelTags}${stb(item.status)}<span style="font-family:'JetBrains Mono',monospace;font-size:var(--ct-xs);color:var(--c3)">${fmtDFull(item.date)}</span></div>`;
 
-  const phase=PHASES.find(p=>p.id===item.phase);
-  const refsHtml=(item.refs||[]).map(r=>`<div style="padding:6px 10px;background:rgba(255,255,255,.04);border-radius:6px;font-size:var(--ct-xs);color:var(--c2);margin-bottom:4px">${r}</div>`).join('')||'<div style="color:var(--c3);font-size:var(--ct-xs)">Aucune référence</div>';
-  const assignee=item.assigned_to?getContact(item.assigned_to):null;
-  const teamOpts=getTeam().map(t=>`<option value="${t.id}"${item.assigned_to===t.id?' selected':''}>${t.prenom} ${t.nom} — ${t.role}</option>`).join('');
+  // Build tabs
+  tabs.innerHTML=[
+    {id:'ct',label:'Contenu'},
+    {id:'pl',label:'Planning'},
+    {id:'eq',label:'Équipe'},
+    {id:'bu',label:'Budget'},
+  ].map((t,i)=>`<div class="rp-tab${i===0?' active':''}" onclick="rpSw('${t.id}',this)">${t.label}</div>`).join('');
 
-  body.innerHTML=`
-<div class="fs"><div class="fs-t">Détails</div><div class="fg">
-  <div class="f"><label>Date cible</label><input type="date" value="${item.date||''}"></div>
-  <div class="f"><label>Statut</label><select>${Object.entries(STATUS_MAP).map(([k,v])=>`<option value="${k}"${k===item.status?' selected':''}>${v.label}</option>`).join('')}</select></div>
-  <div class="f"><label>Phase</label><select>${PHASES.map(p=>`<option value="${p.id}"${p.id===item.phase?' selected':''}>${p.name}</option>`).join('')}</select></div>
-  <div class="f"><label>Responsable (entité)</label><select>${['ML × EPK','ML','EPK','Culturel Paris','Electro News','Guettapen'].map(o=>`<option${o===item.owner?' selected':''}>${o}</option>`).join('')}</select></div>
-  <div class="f f2"><label>Assigné à (personne)</label><select><option value="">— Non assigné —</option>${teamOpts}</select></div>
-  <div class="f f2"><label>Canaux</label><div style="display:flex;gap:4px;flex-wrap:wrap">${['Post','Réel','Newsletter','Presse','Ads'].map(c=>`<label style="display:flex;align-items:center;gap:4px;font-size:var(--ct-xs);color:var(--c2);cursor:pointer"><input type="checkbox"${item.channels.includes(c)?' checked':''}> ${c}</label>`).join('')}</div></div>
-  <div class="f f2"><label>Lié à la billetterie</label><select><option${item.billetterie?' selected':''}>Oui</option><option${!item.billetterie?' selected':''}>Non</option></select></div>
-</div></div>
-${assignee?`<div class="fs"><div class="fs-t">Personne assignée</div><div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,.04);border-radius:8px"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(140deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-size:var(--ct-xs);font-weight:var(--fw-b);color:#fff;flex-shrink:0">${assignee.prenom[0]}${assignee.nom[0]}</div><div><div style="font-size:var(--ct-sm);font-weight:var(--fw-s);color:var(--c1)">${assignee.prenom} ${assignee.nom}</div><div style="font-size:var(--ct-xs);color:var(--c3)">${assignee.role}</div></div></div></div>`:''}
-<div class="fs"><div class="fs-t">Notes / Brief</div><textarea style="width:100%;padding:8px 10px;border:1px solid var(--c4);border-radius:6px;background:var(--frame-input);font-family:'Outfit',sans-serif;font-size:var(--ct-sm);color:var(--c1);outline:none;min-height:80px;resize:vertical">${item.notes||''}</textarea></div>
-<div class="fs"><div class="fs-t">Références visuelles</div>${refsHtml}<button style="margin-top:8px;padding:6px 12px;border:1px dashed var(--c4);border-radius:6px;background:none;color:var(--c3);font-family:'Outfit',sans-serif;font-size:var(--ct-xs);cursor:pointer;transition:all .14s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--c4)';this.style.color='var(--c3)'">+ Ajouter référence</button></div>
-<div class="fs"><div class="fs-t">Phase actuelle</div><div style="padding:8px 12px;border-radius:8px;background:${phase?.color||'rgba(255,255,255,.06)'};color:${phase?.text||'var(--c2)'};font-size:var(--ct-sm);font-weight:var(--fw-s)">${phase?.name||'—'} <span style="opacity:.6;font-weight:var(--fw-r);font-size:var(--ct-xs)">${fmtD(phase?.start||'')} → ${fmtD(phase?.end||'')}</span></div></div>`;
-
+  // Build all panels
+  body.innerHTML = buildContenuPanel(item) + buildPlanningPanel(item) + buildEquipePanel(item) + buildBudgetPanel(item);
   filt();
 }
 
+/* ── Tab 1: Contenu ── */
+function buildContenuPanel(item){
+  const refsHtml=(item.refs||[]).map(r=>`<div style="padding:6px 10px;background:rgba(255,255,255,.04);border-radius:6px;font-size:var(--ct-xs);color:var(--c2);margin-bottom:4px">${r}</div>`).join('')||'<div style="color:var(--c3);font-size:var(--ct-xs)">Aucune référence</div>';
+  return `<div class="rp-panel active" id="rp-ct">
+<div class="fs"><div class="fs-t">Brief</div><div class="fg">
+  <div class="f f2"><label>Titre</label><input value="${item.title}" placeholder="Titre du contenu"></div>
+  <div class="f f2"><label>Canaux</label><div style="display:flex;gap:6px;flex-wrap:wrap">${['Post','Réel','Newsletter','Presse','Ads'].map(c=>`<label style="display:flex;align-items:center;gap:4px;font-size:var(--ct-xs);color:var(--c2);cursor:pointer"><input type="checkbox"${item.channels.includes(c)?' checked':''}> ${c}</label>`).join('')}</div></div>
+  <div class="f f2"><label>Lié à la billetterie</label><select><option${!item.billetterie?' selected':''}>Non</option><option${item.billetterie?' selected':''}>Oui</option></select></div>
+</div></div>
+<div class="fs"><div class="fs-t">Caption / Texte du post</div><textarea style="width:100%;padding:8px 10px;border:1px solid var(--c4);border-radius:6px;background:var(--frame-input);font-family:'Outfit',sans-serif;font-size:var(--ct-sm);color:var(--c1);outline:none;min-height:100px;resize:vertical" placeholder="Texte du post, caption Instagram, accroche newsletter…">${item.caption||''}</textarea></div>
+<div class="fs"><div class="fs-t">Notes internes</div><textarea style="width:100%;padding:8px 10px;border:1px solid var(--c4);border-radius:6px;background:var(--frame-input);font-family:'Outfit',sans-serif;font-size:var(--ct-sm);color:var(--c1);outline:none;min-height:60px;resize:vertical" placeholder="Notes pour l'équipe…">${item.notes||''}</textarea></div>
+<div class="fs"><div class="fs-t">Références visuelles</div>${refsHtml}
+<div style="border:1.5px dashed var(--c4);border-radius:8px;padding:14px;text-align:center;cursor:pointer;transition:border-color .14s;margin-top:8px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--c4)'">
+<div style="font-size:var(--ct-xs);color:var(--c3)">Glisser ou cliquer pour uploader</div>
+<div style="font-size:var(--fs-xs);color:var(--c3);opacity:.5;margin-top:3px">Images, vidéos, PDF · 10 MB max</div>
+</div>
+<div class="f f2" style="margin-top:8px"><label>Lien Dropbox / Drive</label><input placeholder="https://dropbox.com/…" value=""></div>
+</div></div>`;
+}
+
+/* ── Tab 2: Planning ── */
+function buildPlanningPanel(item){
+  const phase=PHASES.find(p=>p.id===item.phase);
+  return `<div class="rp-panel" id="rp-pl">
+<div class="fs"><div class="fs-t">Dates</div><div class="fg">
+  <div class="f"><label>Date de publication</label><input type="date" value="${item.date||''}"></div>
+  <div class="f"><label>Heure</label><input type="time" value="${item.time||''}" placeholder="18:00"></div>
+  <div class="f"><label>Deadline interne</label><input type="date" value="${item.deadline||''}" placeholder="Date limite brief"></div>
+  <div class="f"><label>Priorité</label><select>${['Normal','Urgent','Bloquant'].map(p=>`<option${(item.priority||'Normal')===p?' selected':''}>${p}</option>`).join('')}</select></div>
+</div></div>
+<div class="fs"><div class="fs-t">Workflow</div><div class="fg">
+  <div class="f"><label>Statut</label><select>${Object.entries(STATUS_MAP).map(([k,v])=>`<option value="${k}"${k===item.status?' selected':''}>${v.label}</option>`).join('')}</select></div>
+  <div class="f"><label>Phase</label><select>${PHASES.map(p=>`<option value="${p.id}"${p.id===item.phase?' selected':''}>${p.name}</option>`).join('')}</select></div>
+</div></div>
+<div class="fs"><div class="fs-t">Phase actuelle</div><div style="padding:10px 14px;border-radius:8px;background:${phase?.color||'rgba(255,255,255,.06)'};color:${phase?.text||'var(--c2)'};font-size:var(--ct-sm);font-weight:var(--fw-s)">${phase?.name||'—'} <span style="opacity:.6;font-weight:var(--fw-r);font-size:var(--ct-xs)">${fmtD(phase?.start||'')} → ${fmtD(phase?.end||'')}</span></div></div>
+</div>`;
+}
+
+/* ── Tab 3: Équipe ── */
+function buildEquipePanel(item){
+  const assignee=item.assigned_to?getContact(item.assigned_to):null;
+  const teamOpts=getTeam().map(t=>`<option value="${t.id}"${item.assigned_to===t.id?' selected':''}>${t.prenom} ${t.nom} — ${t.role}</option>`).join('');
+
+  const assigneeCard=assignee?`<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:8px;margin-top:8px"><div style="width:32px;height:32px;border-radius:50%;background:${AG[assignee.id%AG.length]};display:flex;align-items:center;justify-content:center;font-size:var(--ct-xs);font-weight:var(--fw-b);color:#fff;flex-shrink:0">${assignee.prenom[0]}${assignee.nom[0]}</div><div style="flex:1"><div style="font-size:var(--ct-sm);font-weight:var(--fw-s);color:var(--c1)">${assignee.prenom} ${assignee.nom}</div><div style="font-size:var(--ct-xs);color:var(--c3)">${assignee.role}</div></div></div>`:'';
+
+  // Fake comments for demo
+  const comments=[
+    {name:'Kenza B.',ini:'KB',time:'19 mar · 14:32',text:'Ok pour le brief, je lance la création.'},
+    {name:'Antoine M.',ini:'AM',time:'19 mar · 15:10',text:'J\'ai ajouté les visuels dans le Dropbox. À valider.'},
+  ];
+  const cmtHtml=item.status!=='idee'?comments.map((c,i)=>`<div class="cmt"><div class="cmt-av" style="background:${AG[i%AG.length]}">${c.ini}</div><div class="cmt-body"><div class="cmt-head"><span class="cmt-name">${c.name}</span><span class="cmt-time">${c.time}</span></div><div class="cmt-text">${c.text}</div></div></div>`).join(''):'<div style="color:var(--c3);font-size:var(--ct-xs);padding:8px 0">Aucun commentaire</div>';
+
+  return `<div class="rp-panel" id="rp-eq">
+<div class="fs"><div class="fs-t">Responsable</div><div class="fg">
+  <div class="f"><label>Entité</label><select>${['ML × EPK','ML','EPK','Culturel Paris','Electro News','Guettapen'].map(o=>`<option${o===item.owner?' selected':''}>${o}</option>`).join('')}</select></div>
+  <div class="f"><label>Assigné à</label><select onchange="assignItem(${item.id},this.value)"><option value="">— Non assigné —</option>${teamOpts}</select></div>
+</div>
+${assigneeCard}
+</div>
+<div class="fs"><div class="fs-t">Équipe comm · ${getTeam().length} membres</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">${getTeam().map(t=>`<div style="display:flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;background:rgba(255,255,255,.04);border-radius:20px;font-size:var(--ct-xs)"><div style="width:22px;height:22px;border-radius:50%;background:${AG[t.id%AG.length]};display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:#fff">${t.prenom[0]}${t.nom[0]}</div><span style="color:var(--c2)">${t.prenom}</span><span style="color:var(--c3);cursor:pointer;margin-left:2px" onclick="rmTeam(${t.id})" title="Retirer">×</span></div>`).join('')}</div>
+<div style="display:flex;gap:6px"><input type="text" id="addTeamSearch" placeholder="Ajouter depuis les contacts…" style="flex:1;padding:7px 10px;border:1px solid var(--c4);border-radius:6px;background:var(--frame-input);font-family:'Outfit',sans-serif;font-size:var(--ct-xs);color:var(--c1);outline:none" oninput="showTeamSuggestions(this.value)"><button onclick="toggleTeamPanel()" style="padding:7px 12px;border-radius:6px;border:1px solid var(--c4);background:none;color:var(--c3);font-family:'Outfit',sans-serif;font-size:var(--ct-xs);cursor:pointer;white-space:nowrap;transition:all .14s" onmouseover="this.style.borderColor='var(--green)';this.style.color='var(--green)'" onmouseout="this.style.borderColor='var(--c4)';this.style.color='var(--c3)'">Gérer</button></div>
+<div id="teamSuggestions" style="margin-top:4px"></div>
+</div>
+<div class="fs"><div class="fs-t">Magic link collaborateur</div>
+<div style="font-size:var(--ct-xs);color:var(--c3);margin-bottom:6px">Lien unique pour un collaborateur externe (presse, influenceur, graphiste freelance) — pas besoin de compte Festiflow</div>
+<div class="ml-box"><div class="ml-url">app.festiflow.com/collab/${item.id}/xK9m2</div><button class="ml-copy" onclick="copyLink(this)">Copier</button><button class="ml-send" onclick="alert('Lien envoyé par email')">Envoyer</button></div>
+<div style="margin-top:6px;font-size:var(--ct-xs);color:var(--c3)">Accès: voir le brief, uploader des assets, marquer comme livré</div>
+</div>
+<div class="fs"><div class="fs-t">Discussion</div>
+${cmtHtml}
+<div style="display:flex;gap:6px;margin-top:8px"><input placeholder="Ajouter un commentaire…" style="flex:1;padding:7px 10px;border:1px solid var(--c4);border-radius:6px;background:var(--frame-input);font-family:'Outfit',sans-serif;font-size:var(--ct-xs);color:var(--c1);outline:none"><button style="padding:7px 12px;border-radius:6px;border:none;background:var(--accent);color:#fff;font-family:'Outfit',sans-serif;font-size:var(--ct-xs);font-weight:var(--fw-s);cursor:pointer">Envoyer</button></div>
+</div>
+</div>`;
+}
+
+/* ── Tab 4: Budget ── */
+function buildBudgetPanel(item){
+  return `<div class="rp-panel" id="rp-bu">
+<div class="fs"><div class="fs-t">Coûts</div><div class="fg">
+  <div class="f"><label>Budget estimé</label><input type="text" value="${item.budget_est||''}" placeholder="0 €"></div>
+  <div class="f"><label>Dépensé</label><input type="text" value="${item.budget_real||''}" placeholder="0 €"></div>
+  <div class="f"><label>Catégorie</label><select>${['— Sélectionner —','Production','Ads','Influence','Presse','Scénographie','Autre'].map(o=>`<option${(item.budget_cat||'')=== o?' selected':''}>${o}</option>`).join('')}</select></div>
+  <div class="f"><label>Lien BudgetFlow</label><input placeholder="Ligne budget globale…" value=""></div>
+</div></div>
+<div class="fs"><div class="fs-t">Justificatifs</div>
+<div style="border:1.5px dashed var(--c4);border-radius:8px;padding:14px;text-align:center;cursor:pointer;transition:border-color .14s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--c4)'">
+<div style="font-size:var(--ct-xs);color:var(--c3)">Glisser ou cliquer pour uploader</div>
+<div style="font-size:var(--fs-xs);color:var(--c3);opacity:.5;margin-top:3px">Facture, devis, justificatif · PDF, JPG</div>
+</div></div>
+<div style="padding:12px 0;text-align:center;font-size:var(--ct-xs);color:var(--c3);opacity:.5">Module Budget complet disponible version serveur</div>
+</div>`;
+}
+
+/* ── Ideas panel detail ── */
 function openIdea(id){
   const idea=IDEAS.find(i=>i.id===id);if(!idea)return;
   const r=document.getElementById('right');r.classList.remove('shut');
@@ -770,6 +886,7 @@ function openIdea(id){
   document.getElementById('rActive').style.display='flex';
   document.getElementById('rpT').textContent=idea.title;
   document.getElementById('rpHead').innerHTML=`<div class="rp-head-title">${idea.title}</div><div class="rp-head-meta"><span class="idea-type">${idea.type}</span><span class="idea-budget">${idea.budget}</span></div>`;
+  document.getElementById('rpTabs').innerHTML='';
   document.getElementById('rpBody').innerHTML=`
 <div class="fs"><div class="fs-t">Objectif</div><div style="font-size:var(--ct-sm);color:var(--c1)">${idea.objective}</div></div>
 <div class="fs"><div class="fs-t">Concept</div><div style="font-size:var(--ct-sm);color:var(--c2);line-height:1.5">${idea.desc}</div></div>
@@ -777,18 +894,39 @@ function openIdea(id){
 <div style="padding-top:12px"><button class="btn-primary" style="width:100%;justify-content:center" onclick="alert('Idée ajoutée au planning')"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Ajouter au planning</button></div>`;
 }
 
+/* ── New item form ── */
 function buildNewItemForm(){
   const teamOpts=getTeam().map(t=>`<option value="${t.id}">${t.prenom} ${t.nom} — ${t.role}</option>`).join('');
   return `<div class="fs"><div class="fs-t">Nouveau contenu</div><div class="fg">
   <div class="f f2"><label>Titre</label><input placeholder="Titre du contenu…"></div>
   <div class="f"><label>Date cible</label><input type="date"></div>
   <div class="f"><label>Phase</label><select>${PHASES.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')}</select></div>
-  <div class="f"><label>Responsable (entité)</label><select><option>ML × EPK</option><option>ML</option><option>EPK</option><option>Culturel Paris</option></select></div>
+  <div class="f"><label>Responsable</label><select><option>ML × EPK</option><option>ML</option><option>EPK</option><option>Culturel Paris</option></select></div>
   <div class="f"><label>Statut</label><select>${Object.entries(STATUS_MAP).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('')}</select></div>
   <div class="f"><label>Assigné à</label><select><option value="">— Non assigné —</option>${teamOpts}</select></div>
   <div class="f f2"><label>Canaux</label><div style="display:flex;gap:6px;flex-wrap:wrap">${['Post','Réel','Newsletter','Presse','Ads'].map(c=>`<label style="display:flex;align-items:center;gap:4px;font-size:var(--ct-xs);color:var(--c2);cursor:pointer"><input type="checkbox"> ${c}</label>`).join('')}</div></div>
-  <div class="f f2"><label>Notes / Brief</label><textarea placeholder="Description du contenu…" style="min-height:60px"></textarea></div>
+  <div class="f f2"><label>Caption / Brief</label><textarea placeholder="Texte du post ou description…" style="min-height:80px"></textarea></div>
 </div></div>`;
+}
+
+/* ── Helpers ── */
+function assignItem(itemId, contactId){
+  const item=ITEMS.find(i=>i.id===itemId);
+  if(item)item.assigned_to=contactId?parseInt(contactId):null;
+  openItem(itemId);
+}
+
+function showTeamSuggestions(q){
+  const el=document.getElementById('teamSuggestions');
+  if(!q||q.length<2){el.innerHTML='';return}
+  const matches=CONTACTS_POOL.filter(c=>!TEAM.includes(c.id)&&`${c.prenom} ${c.nom} ${c.role}`.toLowerCase().includes(q.toLowerCase())).slice(0,4);
+  el.innerHTML=matches.map(c=>`<div class="tp-row" style="padding:6px 8px;cursor:pointer" onclick="addTeam(${c.id});document.getElementById('addTeamSearch').value='';showTeamSuggestions('')"><div class="tp-av" style="background:${AG[c.id%AG.length]};width:22px;height:22px;font-size:8px">${c.prenom[0]}${c.nom[0]}</div><div class="tp-info"><div class="tp-name">${c.prenom} ${c.nom}</div><div class="tp-role">${c.role}</div></div><span style="color:var(--green);font-size:var(--ct-xs)">+ Ajouter</span></div>`).join('');
+}
+
+function copyLink(btn){
+  const url=btn.parentElement.querySelector('.ml-url').textContent;
+  navigator.clipboard.writeText(url).catch(()=>{});
+  const orig=btn.textContent;btn.textContent='Copié';setTimeout(()=>btn.textContent=orig,1500);
 }
 
 function closeItem(){
