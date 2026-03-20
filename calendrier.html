@@ -172,6 +172,32 @@ select.filter:focus{border-color:var(--accent)}select.filter option{background:v
 .rp-footer .btn-primary{flex:1;justify-content:center;padding:7px 14px;font-size:var(--ct-sm)}
 .btn-sm-d{background:none;border:1px solid rgba(237,66,69,.25);border-radius:6px;padding:7px 12px;font-family:'Outfit',sans-serif;font-size:var(--ct-xs);font-weight:var(--fw-s);color:var(--red);cursor:pointer;transition:all .14s}
 .btn-sm-d:hover{background:rgba(237,66,69,.1)}
+/* Channel toggle pills */
+.ch-toggles{display:flex;gap:6px;flex-wrap:wrap;padding:4px 0}
+.ch-tog{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:6px;border:1px solid var(--c4);font-size:var(--ct-xs);font-weight:var(--fw-s);color:var(--c3);cursor:pointer;transition:all .14s;background:transparent}
+.ch-tog:hover{border-color:var(--c3);color:var(--c2)}
+.ch-tog.on{border-color:currentColor}
+.ch-tog[data-ch="Post"].on{background:rgba(88,101,242,.12);color:#7c8af2;border-color:rgba(88,101,242,.3)}
+.ch-tog[data-ch="Réel"].on{background:rgba(59,165,93,.12);color:#5cc77a;border-color:rgba(59,165,93,.3)}
+.ch-tog[data-ch="Newsletter"].on{background:rgba(245,166,35,.12);color:var(--amber);border-color:rgba(245,166,35,.3)}
+.ch-tog[data-ch="Presse"].on{background:rgba(155,89,182,.12);color:#c490e0;border-color:rgba(155,89,182,.3)}
+.ch-tog[data-ch="Ads"].on{background:rgba(237,66,69,.12);color:#f08080;border-color:rgba(237,66,69,.3)}
+/* Magic link */
+.ml-box{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--frame-input);border:1px solid var(--c4);border-radius:8px;margin-top:6px}
+.ml-url{flex:1;font-family:'JetBrains Mono',monospace;font-size:var(--fs-sm);color:var(--c3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ml-btn{padding:5px 10px;border-radius:5px;font-family:'Outfit',sans-serif;font-size:var(--fs-xs);font-weight:var(--fw-s);cursor:pointer;white-space:nowrap;transition:opacity .15s;border:none}
+.ml-copy{background:var(--accent);color:#fff}.ml-copy:hover{opacity:.8}
+.ml-send{background:none;border:1px solid var(--c4);color:var(--c3)}.ml-send:hover{border-color:var(--green);color:var(--green)}
+/* Comment thread */
+.cmt{display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--c4)}.cmt:last-child{border-bottom:none}
+.cmt-body{flex:1;min-width:0}
+.cmt-head{display:flex;gap:6px;align-items:baseline}
+.cmt-name{font-size:var(--ct-xs);font-weight:var(--fw-s);color:var(--c1)}
+.cmt-time{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--c3)}
+.cmt-text{font-size:var(--ct-xs);color:var(--c2);margin-top:2px;line-height:1.4}
+/* Upload zone */
+.upload-zone{border:1.5px dashed var(--c4);border-radius:8px;padding:14px;text-align:center;cursor:pointer;transition:border-color .14s}
+.upload-zone:hover{border-color:var(--accent)}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 .cc{animation:fadeIn .2s ease both}
 @media(max-width:768px){.left-zone,.right{display:none!important}}
@@ -433,8 +459,9 @@ function openItem(id){
   if(!item){
     document.getElementById('rpT').textContent='Nouveau contenu';
     head.innerHTML='<div class="rp-head-title">Nouveau contenu</div>';
-    tabs.innerHTML='';
-    body.innerHTML='<div class="rp-panel active" id="rp-ct"><div style="padding:8px 0;color:var(--c3);font-size:var(--ct-xs)">Formulaire de création (identique à Campagnes)</div></div>';
+    tabs.innerHTML=[{id:'ct',label:'Contenu'},{id:'pl',label:'Planning'},{id:'eq',label:'Équipe'},{id:'bu',label:'Budget'}].map((t,i)=>`<div class="rp-tab${i===0?' active':''}" onclick="rpSw('${t.id}',this)">${t.label}</div>`).join('');
+    const teamOpts=TEAM.map(t=>`<option value="${t.id}">${t.prenom} ${t.nom}</option>`).join('');
+    body.innerHTML=panelContenu({})+panelPlanning({})+panelEquipe({},null,teamOpts)+panelBudget({});
     return;
   }
 
@@ -450,40 +477,114 @@ function openItem(id){
   const assignee=item.assigned_to?getContact(item.assigned_to):null;
   const teamOpts=TEAM.map(t=>`<option value="${t.id}"${item.assigned_to===t.id?' selected':''}>${t.prenom} ${t.nom}</option>`).join('');
 
-  body.innerHTML=`
-<div class="rp-panel active" id="rp-ct">
-  <div class="fs"><div class="fs-t">Brief</div><div class="fg">
-    <div class="f f2"><label>Titre</label><input value="${item.title}"></div>
-    <div class="f f2"><label>Canaux</label><div style="display:flex;gap:6px;flex-wrap:wrap">${['Post','Réel','Newsletter','Presse','Ads'].map(c=>`<label style="display:flex;align-items:center;gap:4px;font-size:var(--ct-xs);color:var(--c2);cursor:pointer"><input type="checkbox"${item.channels.includes(c)?' checked':''}> ${c}</label>`).join('')}</div></div>
-  </div></div>
-  <div class="fs"><div class="fs-t">Caption / Texte</div><textarea style="width:100%;padding:8px 10px;border:1px solid var(--c4);border-radius:6px;background:var(--frame-input);font-family:'Outfit',sans-serif;font-size:var(--ct-sm);color:var(--c1);outline:none;min-height:80px;resize:vertical">${item.notes||''}</textarea></div>
-</div>
-<div class="rp-panel" id="rp-pl">
-  <div class="fs"><div class="fs-t">Dates</div>
-    <div class="f" style="margin-bottom:10px"><label>Date de publication</label><input type="date" value="${item.date||''}"></div>
-    <div class="fg">
-      <div class="f"><label>Statut</label><select>${Object.entries(STATUS_LABEL).map(([k,v])=>`<option value="${k}"${k===item.status?' selected':''}>${v}</option>`).join('')}</select></div>
-      <div class="f"><label>Événement</label><select>${Object.entries(EVENTS).map(([k,v])=>`<option value="${k}"${k===item.event?' selected':''}>${v.name}</option>`).join('')}</select></div>
-    </div>
-  </div>
-</div>
-<div class="rp-panel" id="rp-eq">
-  <div class="fs"><div class="fs-t">Responsable</div><div class="fg">
-    <div class="f"><label>Entité</label><select>${['ML','EPK','ML × EPK','Sonora','Culturel Paris'].map(o=>`<option${o===item.owner?' selected':''}>${o}</option>`).join('')}</select></div>
-    <div class="f"><label>Assigné à</label><select><option value="">— Non assigné —</option>${teamOpts}</select></div>
-  </div>
-  ${assignee?`<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:8px;margin-top:8px"><div class="av av-md" style="background:${grd(assignee.id)}">${ini(assignee.prenom,assignee.nom)}</div><div><div style="font-size:var(--ct-sm);font-weight:var(--fw-s);color:var(--c1)">${assignee.prenom} ${assignee.nom}</div><div style="font-size:var(--ct-xs);color:var(--c3)">${assignee.role}</div></div></div>`:''}
-  </div>
-</div>
-<div class="rp-panel" id="rp-bu">
-  <div class="fs"><div class="fs-t">Coûts</div><div class="fg">
-    <div class="f"><label>Budget estimé</label><input placeholder="0 €"></div>
-    <div class="f"><label>Dépensé</label><input placeholder="0 €"></div>
-  </div></div>
-  <div style="padding:20px 0;text-align:center;font-size:var(--ct-xs);color:var(--c3);opacity:.5">Module Budget complet version serveur</div>
-</div>`;
+  body.innerHTML=panelContenu(item)+panelPlanning(item)+panelEquipe(item,assignee,teamOpts)+panelBudget(item);
   filt();
 }
+
+/* ── Panel builders (shared with Campagnes) ── */
+function panelContenu(item){
+  const v=item||{};
+  const chans=['Post','Réel','Newsletter','Presse','Ads'];
+  const chanToggles=chans.map(c=>`<div class="ch-tog${(v.channels||[]).includes(c)?' on':''}" data-ch="${c}" onclick="this.classList.toggle('on')">${c}</div>`).join('');
+  const refsHtml=(v.refs||[]).map(r=>`<div style="padding:6px 10px;background:rgba(255,255,255,.04);border-radius:6px;font-size:var(--ct-xs);color:var(--c2);margin-bottom:4px">${r}</div>`).join('');
+
+  return `<div class="rp-panel active" id="rp-ct">
+<div class="fs"><div class="fs-t">Brief</div>
+  <div class="f" style="margin-bottom:10px"><label>Titre</label><input value="${v.title||''}" placeholder="Titre du contenu…"></div>
+  <div class="f" style="margin-bottom:10px"><label>Canaux</label><div class="ch-toggles">${chanToggles}</div></div>
+  <div class="f"><label>Lié à la billetterie</label><select><option${!v.billetterie?' selected':''}>Non</option><option${v.billetterie?' selected':''}>Oui</option></select></div>
+</div>
+<div class="fs"><div class="fs-t">Caption / texte du post</div>
+  <textarea style="width:100%;padding:10px;border:1px solid var(--c4);border-radius:6px;background:var(--frame-input);font-family:'Outfit',sans-serif;font-size:var(--ct-sm);color:var(--c1);outline:none;min-height:100px;resize:vertical" placeholder="Texte du post, caption Instagram, accroche newsletter…">${v.caption||''}</textarea>
+</div>
+<div class="fs"><div class="fs-t">Notes internes</div>
+  <textarea style="width:100%;padding:10px;border:1px solid var(--c4);border-radius:6px;background:var(--frame-input);font-family:'Outfit',sans-serif;font-size:var(--ct-sm);color:var(--c1);outline:none;min-height:60px;resize:vertical" placeholder="Notes pour l'équipe…">${v.notes||''}</textarea>
+</div>
+<div class="fs"><div class="fs-t">Références visuelles</div>
+  ${refsHtml}
+  <div class="upload-zone" style="margin-top:6px">
+    <div style="font-size:var(--ct-xs);color:var(--c3)">Glisser ou cliquer pour uploader</div>
+    <div style="font-size:var(--fs-xs);color:var(--c3);opacity:.5;margin-top:3px">Images, vidéos, PDF · 10 MB max</div>
+  </div>
+  <div class="f" style="margin-top:8px"><label>Lien Dropbox / Drive</label><input placeholder="https://dropbox.com/…" value=""></div>
+</div>
+</div>`;
+}
+
+function panelPlanning(item){
+  const v=item||{};
+  return `<div class="rp-panel" id="rp-pl">
+<div class="fs"><div class="fs-t">Dates</div>
+  <div class="f" style="margin-bottom:10px"><label>Date de publication</label><input type="date" value="${v.date||''}"></div>
+  <div class="fg">
+    <div class="f"><label>Heure</label><input type="time" value="${v.time||'18:00'}"></div>
+    <div class="f"><label>Priorité</label><select>${['Normal','Urgent','Bloquant'].map(p=>`<option${(v.priority||'Normal')===p?' selected':''}>${p}</option>`).join('')}</select></div>
+  </div>
+  <div class="f" style="margin-top:10px"><label>Deadline interne (brief prêt avant)</label><input type="date" value="${v.deadline||''}"></div>
+</div>
+<div class="fs"><div class="fs-t">Workflow</div>
+  <div class="fg">
+    <div class="f"><label>Statut</label><select>${Object.entries(STATUS_LABEL).map(([k,l])=>`<option value="${k}"${k===v.status?' selected':''}>${l}</option>`).join('')}</select></div>
+    <div class="f"><label>Événement</label><select>${Object.entries(EVENTS).map(([k,e])=>`<option value="${k}"${k===v.event?' selected':''}>${e.name}</option>`).join('')}</select></div>
+  </div>
+</div>
+</div>`;
+}
+
+function panelEquipe(item,assignee,teamOpts){
+  const v=item||{};
+  const assigneeCard=assignee?`<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:8px;margin-top:8px"><div class="av av-md" style="background:${grd(assignee.id)}">${ini(assignee.prenom,assignee.nom)}</div><div><div style="font-size:var(--ct-sm);font-weight:var(--fw-s);color:var(--c1)">${assignee.prenom} ${assignee.nom}</div><div style="font-size:var(--ct-xs);color:var(--c3)">${assignee.role}</div></div></div>`:'';
+
+  const teamPills=TEAM.map(t=>`<div style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px 3px 3px;background:rgba(255,255,255,.04);border-radius:16px;font-size:var(--ct-xs);margin:2px"><div class="av av-sm" style="background:${grd(t.id)}">${ini(t.prenom,t.nom)}</div><span style="color:var(--c2)">${t.prenom}</span></div>`).join('');
+
+  const comments=v.status&&v.status!=='idee'?`
+    <div class="cmt"><div class="av av-sm" style="background:${AG[0]}">${ini('Kenza','B')}</div><div class="cmt-body"><div class="cmt-head"><span class="cmt-name">Kenza B.</span><span class="cmt-time">19 mar · 14:32</span></div><div class="cmt-text">Ok pour le brief, je lance la création.</div></div></div>
+    <div class="cmt"><div class="av av-sm" style="background:${AG[2]}">${ini('Antoine','M')}</div><div class="cmt-body"><div class="cmt-head"><span class="cmt-name">Antoine M.</span><span class="cmt-time">19 mar · 15:10</span></div><div class="cmt-text">Visuels ajoutés dans le Dropbox. À valider.</div></div></div>`:'<div style="color:var(--c3);font-size:var(--ct-xs);padding:6px 0">Aucun commentaire</div>';
+
+  return `<div class="rp-panel" id="rp-eq">
+<div class="fs"><div class="fs-t">Responsable</div>
+  <div class="fg">
+    <div class="f"><label>Entité</label><select>${['ML','EPK','ML × EPK','Sonora','Culturel Paris'].map(o=>`<option${o===v.owner?' selected':''}>${o}</option>`).join('')}</select></div>
+    <div class="f"><label>Assigné à</label><select><option value="">— Non assigné —</option>${teamOpts}</select></div>
+  </div>
+  ${assigneeCard}
+</div>
+<div class="fs"><div class="fs-t">Équipe comm · ${TEAM.length} membres</div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">${teamPills}</div>
+</div>
+<div class="fs"><div class="fs-t">Magic link collaborateur</div>
+  <div style="font-size:var(--ct-xs);color:var(--c3);margin-bottom:4px">Lien pour un collaborateur externe — pas besoin de compte</div>
+  <div class="ml-box"><div class="ml-url">app.festiflow.com/collab/${v.id||'…'}/xK9m2</div><button class="ml-btn ml-copy" onclick="copyLink(this)">Copier</button><button class="ml-btn ml-send">Envoyer</button></div>
+</div>
+<div class="fs"><div class="fs-t">Discussion</div>
+  ${comments}
+  <div style="display:flex;gap:6px;margin-top:8px"><input placeholder="Ajouter un commentaire…" style="flex:1;padding:7px 10px;border:1px solid var(--c4);border-radius:6px;background:var(--frame-input);font-family:'Outfit',sans-serif;font-size:var(--ct-xs);color:var(--c1);outline:none"><button style="padding:7px 12px;border-radius:6px;border:none;background:var(--accent);color:#fff;font-family:'Outfit',sans-serif;font-size:var(--ct-xs);font-weight:var(--fw-s);cursor:pointer">Envoyer</button></div>
+</div>
+</div>`;
+}
+
+function panelBudget(item){
+  const v=item||{};
+  return `<div class="rp-panel" id="rp-bu">
+<div class="fs"><div class="fs-t">Coûts</div>
+  <div class="fg">
+    <div class="f"><label>Budget estimé</label><input type="text" value="${v.budget_est||''}" placeholder="0 €"></div>
+    <div class="f"><label>Dépensé</label><input type="text" value="${v.budget_real||''}" placeholder="0 €"></div>
+  </div>
+  <div class="f" style="margin-top:10px"><label>Catégorie</label><select>${['— Sélectionner —','Production','Ads','Influence','Presse','Scénographie','Autre'].map(o=>`<option${(v.budget_cat||'')=== o?' selected':''}>${o}</option>`).join('')}</select></div>
+  <div class="f" style="margin-top:10px"><label>Lien BudgetFlow</label><input placeholder="Ligne budget globale…" value=""></div>
+</div>
+<div class="fs"><div class="fs-t">Justificatifs</div>
+  <div class="upload-zone">
+    <div style="font-size:var(--ct-xs);color:var(--c3)">Glisser ou cliquer pour uploader</div>
+    <div style="font-size:var(--fs-xs);color:var(--c3);opacity:.5;margin-top:3px">Facture, devis, justificatif · PDF, JPG</div>
+  </div>
+</div>
+<div style="padding:12px 0;text-align:center;font-size:var(--ct-xs);color:var(--c3);opacity:.5">Module Budget complet version serveur</div>
+</div>`;
+}
+
+function copyLink(btn){const url=btn.parentElement.querySelector('.ml-url').textContent;navigator.clipboard.writeText(url).catch(()=>{});const o=btn.textContent;btn.textContent='Copié';setTimeout(()=>btn.textContent=o,1500)}
 
 function closeItem(){selectedId=null;document.getElementById('rActive').style.display='none';document.getElementById('rEmpty').style.display='';document.getElementById('right').classList.add('shut');filt()}
 
