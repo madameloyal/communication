@@ -86,13 +86,19 @@ html,body{height:100%;overflow:hidden;background:linear-gradient(180deg,#7758cf,
 .tb-toggle:hover{background:rgba(255,255,255,.06)}.tb-toggle svg{width:16px;height:16px;fill:none;stroke:var(--c3);stroke-width:1.6;stroke-linecap:round;transition:stroke .14s}.tb-toggle:hover svg{stroke:var(--c1)}
 .content{flex:1;display:flex;flex-direction:column;overflow:hidden}
 
-/* Stats */
-.stats-bar{display:flex;gap:12px;padding:18px 24px 0;flex-shrink:0;flex-wrap:wrap}
-.stat-card{display:flex;align-items:center;gap:10px;background:var(--frame-card);border-radius:10px;padding:12px 16px;flex:1;min-width:130px}
-.stat-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.stat-icon svg{width:16px;height:16px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.stat-value{font-family:'JetBrains Mono',monospace;font-size:var(--ct-xl);font-weight:var(--fw-s);color:var(--c1);line-height:1}
-.stat-label{font-size:var(--ct-xs);color:var(--c3);margin-top:2px}
+/* Stats — phase bar + action cards */
+.stats-bar{display:flex;flex-direction:column;gap:8px;padding:18px 24px 0;flex-shrink:0}
+.phase-bar{display:flex;align-items:center;gap:12px;background:var(--frame-card);border-radius:10px;padding:10px 16px}
+.phase-bar-name{font-size:var(--ct-sm);font-weight:var(--fw-s);color:var(--c1);white-space:nowrap}
+.phase-bar-dates{font-family:'JetBrains Mono',monospace;font-size:var(--fs-xs);color:var(--c3);white-space:nowrap}
+.phase-bar-track{flex:1;height:6px;background:var(--c4);border-radius:3px;overflow:hidden;min-width:60px}
+.phase-bar-fill{height:100%;border-radius:3px;transition:width .4s}
+.phase-bar-count{font-family:'JetBrains Mono',monospace;font-size:var(--ct-xs);color:var(--c3);white-space:nowrap}
+.action-cards{display:flex;gap:10px}
+.act-card{display:flex;align-items:center;gap:10px;background:var(--frame-card);border-radius:10px;padding:10px 16px;flex:1;min-width:0;cursor:pointer;transition:background .12s;border-left:3px solid transparent;border-radius:0 10px 10px 0}
+.act-card:hover{background:var(--card-hover)}
+.act-val{font-family:'JetBrains Mono',monospace;font-size:var(--ct-xl);font-weight:var(--fw-s);line-height:1}
+.act-label{font-size:var(--ct-xs);color:var(--c3);margin-top:1px}
 
 /* Toolbar */
 .toolbar{display:flex;gap:8px;padding:16px 24px 0;flex-shrink:0;align-items:center;flex-wrap:wrap}
@@ -390,16 +396,16 @@ const ITEMS = [
   {id:4, title:'Post stress selling', date:'2026-02-27', channels:['Post'], owner:'Culturel Paris', status:'publie', phase:'teasing', notes:'Billetterie', billetterie:true},
   {id:5, title:'Teasing annonce Mme Loyal', date:'2026-03-03', channels:['Réel'], owner:'ML', status:'publie', phase:'teasing', notes:''},
   {id:6, title:'Teasing annonce Mme Loyal 2', date:'2026-03-12', channels:['Réel'], owner:'ML', status:'publie', phase:'teasing', notes:''},
-  {id:7, title:'Presse digitale (4-5 comptes)', date:'2026-03-20', channels:['Presse'], owner:'EPK', status:'programme', phase:'annonce', notes:'Electro News, Guettapen', refs:['Carrousel Electro News','Carrousel Guettapen']},
-  {id:8, title:'2 articles presse', date:'2026-03-20', channels:['Presse'], owner:'EPK', status:'programme', phase:'annonce', notes:'Electro News, Guettapen', refs:['Article Electro News','Article Guettapen']},
-  {id:9, title:'Réel teaser presse', date:'2026-03-21', channels:['Presse','Réel'], owner:'Culturel Paris', status:'programme', phase:'annonce', notes:'Annonce Culturel Paris'},
-  {id:10, title:'Urgence pré-inscription', date:'2026-03-21', channels:['Post'], owner:'ML × EPK', status:'programme', phase:'annonce', notes:'Plus de X pré-inscrits', billetterie:true},
-  {id:11, title:'Post carrousel collab des deux univers', date:'2026-03-22', channels:['Post'], owner:'ML × EPK', status:'en_cours', phase:'annonce', notes:'Post photos 2 univers'},
-  {id:12, title:'Réel artiste n°1', date:'2026-03-23', channels:['Réel'], owner:'ML', status:'en_cours', phase:'annonce', notes:'Réel collab Electro News'},
-  {id:13, title:'RDV demain pour la répartition artistes', date:'2026-03-24', channels:['Post'], owner:'ML × EPK', status:'brief', phase:'annonce', notes:''},
-  {id:14, title:'Annonce Event collab (visuel fort + co-branding)', date:'2026-03-25', channels:['Post'], owner:'ML × EPK', status:'brief', phase:'annonce', notes:'', refs:['Carrousel Annonce Event Paris XXL Outdoor']},
-  {id:15, title:'AFFICHE GLOBALE (jeu concours + pré-inscription)', date:'2026-03-26', channels:['Post'], owner:'ML × EPK', status:'brief', phase:'annonce', notes:'', refs:['Jeu Concours']},
-  {id:16, title:'Réel teaser co branding', date:'2026-03-27', channels:['Réel'], owner:'ML × EPK', status:'brief', phase:'annonce', notes:'', refs:['Réel Annonce évent']},
+  {id:7, title:'Presse digitale (4-5 comptes)', date:'2026-03-20', channels:['Presse'], owner:'EPK', status:'programme', phase:'annonce', notes:'Electro News, Guettapen', refs:['Carrousel Electro News','Carrousel Guettapen'], assigned_to:51},
+  {id:8, title:'2 articles presse', date:'2026-03-20', channels:['Presse'], owner:'EPK', status:'programme', phase:'annonce', notes:'Electro News, Guettapen', refs:['Article Electro News','Article Guettapen'], assigned_to:51},
+  {id:9, title:'Réel teaser presse', date:'2026-03-21', channels:['Presse','Réel'], owner:'Culturel Paris', status:'programme', phase:'annonce', notes:'Annonce Culturel Paris', assigned_to:54},
+  {id:10, title:'Urgence pré-inscription', date:'2026-03-21', channels:['Post'], owner:'ML × EPK', status:'programme', phase:'annonce', notes:'Plus de X pré-inscrits', billetterie:true, assigned_to:53},
+  {id:11, title:'Post carrousel collab des deux univers', date:'2026-03-22', channels:['Post'], owner:'ML × EPK', status:'en_cours', phase:'annonce', notes:'Post photos 2 univers', assigned_to:52},
+  {id:12, title:'Réel artiste n°1', date:'2026-03-23', channels:['Réel'], owner:'ML', status:'en_cours', phase:'annonce', notes:'Réel collab Electro News', assigned_to:54},
+  {id:13, title:'RDV demain pour la répartition artistes', date:'2026-03-24', channels:['Post'], owner:'ML × EPK', status:'brief', phase:'annonce', notes:'', assigned_to:53},
+  {id:14, title:'Annonce Event collab (visuel fort + co-branding)', date:'2026-03-25', channels:['Post'], owner:'ML × EPK', status:'brief', phase:'annonce', notes:'', refs:['Carrousel Annonce Event Paris XXL Outdoor'], assigned_to:52},
+  {id:15, title:'AFFICHE GLOBALE (jeu concours + pré-inscription)', date:'2026-03-26', channels:['Post'], owner:'ML × EPK', status:'brief', phase:'annonce', notes:'', refs:['Jeu Concours'], assigned_to:52},
+  {id:16, title:'Réel teaser co branding', date:'2026-03-27', channels:['Réel'], owner:'ML × EPK', status:'brief', phase:'annonce', notes:'', refs:['Réel Annonce évent'], assigned_to:54},
   {id:17, title:'PRESSE digitale', date:'2026-03-26', channels:['Presse'], owner:'ML × EPK', status:'brief', phase:'annonce', notes:'Culturel + Electro News + Guettapen'},
   {id:18, title:'Newsletter (150k contacts)', date:'2026-03-27', channels:['Newsletter'], owner:'ML × EPK', status:'brief', phase:'annonce', notes:'ML x Elektric Park : Save the date.'},
   {id:19, title:'AFFICHE RÉPARTITION ARTISTES J1 et J2', date:'2026-03-25', channels:['Post'], owner:'ML × EPK', status:'brief', phase:'annonce', notes:'+ nombre pré-inscrits'},
@@ -450,6 +456,16 @@ const IDEAS = [
   {id:110, title:'Le Glitch Mirror', type:'Tech / Smartphone', objective:'UGC Original', desc:'Miroir-écran HD avec caméra qui renvoie votre image avec effet glitch artistique.', budget:'5 000 – 8 000 €'},
 ];
 
+/* TEAM CONTACTS — pulled from the Contacts database (comm team members) */
+const TEAM = [
+  {id:51, prenom:'Kenza', nom:'Boulahia', role:'Dir. Communication EPK'},
+  {id:52, prenom:'Lola', nom:'Da Silva', role:'DA / Graphiste'},
+  {id:53, prenom:'Antoine', nom:'Moreau', role:'Community Manager ML'},
+  {id:54, prenom:'Jules', nom:'Petit', role:'Vidéaste / Réels'},
+  {id:55, prenom:'Sarah', nom:'Renard', role:'Directrice Festival'},
+  {id:56, prenom:'Leo', nom:'Music', role:'Prod / Dev'},
+];
+
 /* ═══════════════════════════════════════
    HELPERS
    ═══════════════════════════════════════ */
@@ -473,19 +489,43 @@ let currentView = 'timeline';
 let showIdeas = false;
 
 /* ═══════════════════════════════════════
-   STATS
+   STATS — Option C: phase bar + action cards
    ═══════════════════════════════════════ */
+function getCurrentPhase(){
+  const today=new Date().toISOString().split('T')[0];
+  return PHASES.find(p=>today>=p.start&&today<=p.end)||PHASES[0];
+}
+
 function updateStats(){
   const bar=document.getElementById('statsBar');
-  const total=ITEMS.length;
-  const published=ITEMS.filter(i=>i.status==='publie').length;
-  const inProg=ITEMS.filter(i=>i.status==='en_cours'||i.status==='brief').length;
-  const needsApproval=ITEMS.filter(i=>i.status==='validation').length;
+  const today=dateStr(new Date());
+
+  // Current phase progress
+  const phase=getCurrentPhase();
+  const phaseItems=ITEMS.filter(i=>i.phase===phase.id);
+  const phaseDone=phaseItems.filter(i=>i.status==='publie'||i.status==='programme').length;
+  const phasePct=phaseItems.length?Math.round((phaseDone/phaseItems.length)*100):0;
+
+  // Action metrics
+  const overdue=ITEMS.filter(i=>i.date&&i.date<today&&i.status!=='publie'&&i.status!=='programme').length;
+  const toValidate=ITEMS.filter(i=>i.status==='validation').length;
+  const next7=new Date();next7.setDate(next7.getDate()+7);const next7Str=dateStr(next7);
+  const upcoming=ITEMS.filter(i=>i.date&&i.date>=today&&i.date<=next7Str&&i.status!=='publie').length;
+  const unassigned=ITEMS.filter(i=>!i.assigned_to&&i.status!=='idee'&&i.status!=='publie').length;
+
   bar.innerHTML=`
-    <div class="stat-card"><div class="stat-icon" style="background:rgba(88,101,242,.14)"><svg style="stroke:var(--blue)" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53A4.48 4.48 0 0012 7.5v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg></div><div><div class="stat-value">${total}</div><div class="stat-label">Total contenus</div></div></div>
-    <div class="stat-card"><div class="stat-icon" style="background:rgba(59,165,93,.14)"><svg style="stroke:var(--green)" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></div><div><div class="stat-value">${published}</div><div class="stat-label">Publiés</div></div></div>
-    <div class="stat-card"><div class="stat-icon" style="background:rgba(245,166,35,.14)"><svg style="stroke:var(--amber)" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/></svg></div><div><div class="stat-value">${inProg}</div><div class="stat-label">En production</div></div></div>
-    <div class="stat-card"><div class="stat-icon" style="background:rgba(237,66,69,.14)"><svg style="stroke:var(--red)" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg></div><div><div class="stat-value">${needsApproval}</div><div class="stat-label">À valider</div></div></div>`;
+    <div class="phase-bar">
+      <div class="phase-bar-name" style="color:${phase.text}">${phase.name}</div>
+      <div class="phase-bar-dates">${fmtD(phase.start)} → ${fmtD(phase.end)}</div>
+      <div class="phase-bar-track"><div class="phase-bar-fill" style="width:${phasePct}%;background:${phase.text}"></div></div>
+      <div class="phase-bar-count">${phaseDone}/${phaseItems.length}</div>
+    </div>
+    <div class="action-cards">
+      <div class="act-card" style="border-left-color:var(--red)" onclick="document.getElementById('stf').value='';filt()"><div><div class="act-val" style="color:var(--red)">${overdue}</div><div class="act-label">En retard</div></div></div>
+      <div class="act-card" style="border-left-color:var(--amber)" onclick="document.getElementById('stf').value='validation';filt()"><div><div class="act-val" style="color:var(--amber)">${toValidate}</div><div class="act-label">À valider</div></div></div>
+      <div class="act-card" style="border-left-color:var(--blue)" onclick="document.getElementById('stf').value='';filt()"><div><div class="act-val" style="color:var(--blue)">${upcoming}</div><div class="act-label">7 prochains jours</div></div></div>
+      <div class="act-card" style="border-left-color:var(--purple)" onclick="document.getElementById('stf').value='';filt()"><div><div class="act-val" style="color:var(--purple)">${unassigned}</div><div class="act-label">Non assigné</div></div></div>
+    </div>`;
 }
 
 /* ═══════════════════════════════════════
@@ -584,11 +624,13 @@ function renderTimeline(data){
     const stripe=CHAN_STRIPE[item.channels[0]]||'str-post';
     const chTags=item.channels.map(c=>`<span class="tl-ch ${CHAN_TAG[c]||'ch-post'}">${c}</span>`).join('');
     const stHtml=stb(item.status);
+    const assignee=item.assigned_to?TEAM.find(t=>t.id===item.assigned_to):null;
+    const assigneeHtml=assignee?`<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:linear-gradient(140deg,var(--accent),var(--purple));font-size:8px;font-weight:800;color:#fff;flex-shrink:0" title="${assignee.prenom} ${assignee.nom}">${assignee.prenom[0]}${assignee.nom[0]}</span>`:'';
 
     html+=`<div class="tl-card${item.id===selectedId?' sel':''}" onclick="openItem(${item.id})">
       <div class="tl-date"><div class="tl-day">${dt.getDate()}</div><div class="tl-dow">${days[dt.getDay()]}</div></div>
       <div class="tl-stripe ${stripe}"></div>
-      <div class="tl-body"><div class="tl-title">${item.title}</div><div class="tl-meta">${chTags}<span class="tl-owner">${item.owner}</span><span class="tl-status">${stHtml}</span></div></div>
+      <div class="tl-body"><div class="tl-title">${item.title}</div><div class="tl-meta">${chTags}<span class="tl-owner">${item.owner}</span>${assigneeHtml}<span class="tl-status">${stHtml}</span></div></div>
     </div>`;
   });
 
@@ -661,16 +703,20 @@ function openItem(id){
 
   const phase=PHASES.find(p=>p.id===item.phase);
   const refsHtml=(item.refs||[]).map(r=>`<div style="padding:6px 10px;background:rgba(255,255,255,.04);border-radius:6px;font-size:var(--ct-xs);color:var(--c2);margin-bottom:4px">${r}</div>`).join('')||'<div style="color:var(--c3);font-size:var(--ct-xs)">Aucune référence</div>';
+  const assignee=item.assigned_to?TEAM.find(t=>t.id===item.assigned_to):null;
+  const teamOpts=TEAM.map(t=>`<option value="${t.id}"${item.assigned_to===t.id?' selected':''}>${t.prenom} ${t.nom} — ${t.role}</option>`).join('');
 
   body.innerHTML=`
 <div class="fs"><div class="fs-t">Détails</div><div class="fg">
   <div class="f"><label>Date cible</label><input type="date" value="${item.date||''}"></div>
-  <div class="f"><label>Statut</label><select class="status-sel" style="background:${STATUS_MAP[item.status]?.cls==='sc'?'var(--stcb)':STATUS_MAP[item.status]?.cls==='sp'?'var(--stpb)':STATUS_MAP[item.status]?.cls==='sv'?'var(--stvb)':'var(--stnb)'};color:${STATUS_MAP[item.status]?.cls==='sc'?'var(--stc)':STATUS_MAP[item.status]?.cls==='sp'?'var(--stp)':STATUS_MAP[item.status]?.cls==='sv'?'var(--stv)':'var(--stn)'}">${Object.entries(STATUS_MAP).map(([k,v])=>`<option value="${k}"${k===item.status?' selected':''}>${v.label}</option>`).join('')}</select></div>
+  <div class="f"><label>Statut</label><select>${Object.entries(STATUS_MAP).map(([k,v])=>`<option value="${k}"${k===item.status?' selected':''}>${v.label}</option>`).join('')}</select></div>
   <div class="f"><label>Phase</label><select>${PHASES.map(p=>`<option value="${p.id}"${p.id===item.phase?' selected':''}>${p.name}</option>`).join('')}</select></div>
-  <div class="f"><label>Responsable</label><select>${['ML × EPK','ML','EPK','Culturel Paris','Electro News','Guettapen'].map(o=>`<option${o===item.owner?' selected':''}>${o}</option>`).join('')}</select></div>
+  <div class="f"><label>Responsable (entité)</label><select>${['ML × EPK','ML','EPK','Culturel Paris','Electro News','Guettapen'].map(o=>`<option${o===item.owner?' selected':''}>${o}</option>`).join('')}</select></div>
+  <div class="f f2"><label>Assigné à (personne)</label><select><option value="">— Non assigné —</option>${teamOpts}</select></div>
   <div class="f f2"><label>Canaux</label><div style="display:flex;gap:4px;flex-wrap:wrap">${['Post','Réel','Newsletter','Presse','Ads'].map(c=>`<label style="display:flex;align-items:center;gap:4px;font-size:var(--ct-xs);color:var(--c2);cursor:pointer"><input type="checkbox"${item.channels.includes(c)?' checked':''}> ${c}</label>`).join('')}</div></div>
   <div class="f f2"><label>Lié à la billetterie</label><select><option${item.billetterie?' selected':''}>Oui</option><option${!item.billetterie?' selected':''}>Non</option></select></div>
 </div></div>
+${assignee?`<div class="fs"><div class="fs-t">Personne assignée</div><div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,.04);border-radius:8px"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(140deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-size:var(--ct-xs);font-weight:var(--fw-b);color:#fff;flex-shrink:0">${assignee.prenom[0]}${assignee.nom[0]}</div><div><div style="font-size:var(--ct-sm);font-weight:var(--fw-s);color:var(--c1)">${assignee.prenom} ${assignee.nom}</div><div style="font-size:var(--ct-xs);color:var(--c3)">${assignee.role}</div></div></div></div>`:''}
 <div class="fs"><div class="fs-t">Notes / Brief</div><textarea style="width:100%;padding:8px 10px;border:1px solid var(--c4);border-radius:6px;background:var(--frame-input);font-family:'Outfit',sans-serif;font-size:var(--ct-sm);color:var(--c1);outline:none;min-height:80px;resize:vertical">${item.notes||''}</textarea></div>
 <div class="fs"><div class="fs-t">Références visuelles</div>${refsHtml}<button style="margin-top:8px;padding:6px 12px;border:1px dashed var(--c4);border-radius:6px;background:none;color:var(--c3);font-family:'Outfit',sans-serif;font-size:var(--ct-xs);cursor:pointer;transition:all .14s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--c4)';this.style.color='var(--c3)'">+ Ajouter référence</button></div>
 <div class="fs"><div class="fs-t">Phase actuelle</div><div style="padding:8px 12px;border-radius:8px;background:${phase?.color||'rgba(255,255,255,.06)'};color:${phase?.text||'var(--c2)'};font-size:var(--ct-sm);font-weight:var(--fw-s)">${phase?.name||'—'} <span style="opacity:.6;font-weight:var(--fw-r);font-size:var(--ct-xs)">${fmtD(phase?.start||'')} → ${fmtD(phase?.end||'')}</span></div></div>`;
@@ -693,12 +739,14 @@ function openIdea(id){
 }
 
 function buildNewItemForm(){
+  const teamOpts=TEAM.map(t=>`<option value="${t.id}">${t.prenom} ${t.nom} — ${t.role}</option>`).join('');
   return `<div class="fs"><div class="fs-t">Nouveau contenu</div><div class="fg">
   <div class="f f2"><label>Titre</label><input placeholder="Titre du contenu…"></div>
   <div class="f"><label>Date cible</label><input type="date"></div>
   <div class="f"><label>Phase</label><select>${PHASES.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')}</select></div>
-  <div class="f"><label>Responsable</label><select><option>ML × EPK</option><option>ML</option><option>EPK</option><option>Culturel Paris</option></select></div>
+  <div class="f"><label>Responsable (entité)</label><select><option>ML × EPK</option><option>ML</option><option>EPK</option><option>Culturel Paris</option></select></div>
   <div class="f"><label>Statut</label><select>${Object.entries(STATUS_MAP).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('')}</select></div>
+  <div class="f"><label>Assigné à</label><select><option value="">— Non assigné —</option>${teamOpts}</select></div>
   <div class="f f2"><label>Canaux</label><div style="display:flex;gap:6px;flex-wrap:wrap">${['Post','Réel','Newsletter','Presse','Ads'].map(c=>`<label style="display:flex;align-items:center;gap:4px;font-size:var(--ct-xs);color:var(--c2);cursor:pointer"><input type="checkbox"> ${c}</label>`).join('')}</div></div>
   <div class="f f2"><label>Notes / Brief</label><textarea placeholder="Description du contenu…" style="min-height:60px"></textarea></div>
 </div></div>`;
