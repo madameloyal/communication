@@ -220,6 +220,7 @@ select.filter:focus{border-color:var(--accent)}select.filter option{background:v
 .f{display:flex;flex-direction:column;gap:4px;min-width:0;overflow:hidden}.f2{grid-column:span 2}
 .f label{font-size:var(--ct-xs);font-weight:var(--fw-s);color:var(--c3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .f input,.f select,.f textarea{padding:8px 10px;border:1px solid var(--c4);border-radius:6px;background:var(--frame-input);font-family:'Outfit',sans-serif;font-size:var(--ct-sm);color:var(--c1);outline:none;transition:border-color .15s;width:100%;min-width:0;box-sizing:border-box}
+.f input[type="date"],.f input[type="time"]{font-family:'JetBrains Mono',monospace;font-size:var(--ct-xs);color-scheme:dark}
 .f input:focus,.f select:focus,.f textarea:focus{border-color:var(--accent)}
 .f input::placeholder,.f textarea::placeholder{color:var(--c3)}
 .f select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(255,255,255,.4)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:24px;cursor:pointer}
@@ -808,12 +809,14 @@ function buildContenuPanel(item){
 function buildPlanningPanel(item){
   const phase=PHASES.find(p=>p.id===item.phase);
   return `<div class="rp-panel" id="rp-pl">
-<div class="fs"><div class="fs-t">Dates</div><div class="fg">
-  <div class="f"><label>Date de publication</label><input type="date" value="${item.date||''}"></div>
-  <div class="f"><label>Heure</label><input type="time" value="${item.time||''}" placeholder="18:00"></div>
-  <div class="f"><label>Deadline interne</label><input type="date" value="${item.deadline||''}" placeholder="Date limite brief"></div>
-  <div class="f"><label>Priorité</label><select>${['Normal','Urgent','Bloquant'].map(p=>`<option${(item.priority||'Normal')===p?' selected':''}>${p}</option>`).join('')}</select></div>
-</div></div>
+<div class="fs"><div class="fs-t">Dates</div>
+  <div class="f" style="margin-bottom:10px"><label>Date de publication</label><input type="date" value="${item.date||''}"></div>
+  <div class="fg">
+    <div class="f"><label>Heure de publication</label><input type="time" value="${item.time||'18:00'}"></div>
+    <div class="f"><label>Priorité</label><select>${['Normal','Urgent','Bloquant'].map(p=>`<option${(item.priority||'Normal')===p?' selected':''}>${p}</option>`).join('')}</select></div>
+  </div>
+  <div class="f" style="margin-top:10px"><label>Deadline interne (brief prêt avant)</label><input type="date" value="${item.deadline||''}"></div>
+</div>
 <div class="fs"><div class="fs-t">Workflow</div><div class="fg">
   <div class="f"><label>Statut</label><select>${Object.entries(STATUS_MAP).map(([k,v])=>`<option value="${k}"${k===item.status?' selected':''}>${v.label}</option>`).join('')}</select></div>
   <div class="f"><label>Phase</label><select>${PHASES.map(p=>`<option value="${p.id}"${p.id===item.phase?' selected':''}>${p.name}</option>`).join('')}</select></div>
