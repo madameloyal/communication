@@ -72,13 +72,13 @@ html,body{height:100%;overflow:hidden;background:linear-gradient(180deg,#7758cf,
 .content{flex:1;display:flex;flex-direction:column;overflow:hidden}
 
 /* TOP CARDS (Registre pattern) */
-.top-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:12px 24px 0}
-.tc{background:var(--frame-card);border-radius:10px;padding:14px 16px}
-.tc-label{font-size:var(--fs-sm);color:var(--c3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-family:'JetBrains Mono',monospace}
-.tc-row{display:flex;align-items:baseline;gap:8px;margin-bottom:2px}
-.tc-val{font-family:'JetBrains Mono',monospace;font-size:var(--ct-xl);font-weight:var(--fw-s);color:var(--c1);line-height:1}
-.tc-unit{font-size:var(--ct-xs);color:var(--c3)}
-.tc-sub{font-size:var(--fs-sm);color:var(--c3);margin-top:4px;line-height:1.3}
+.top-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:8px 24px 0}
+.tc{background:var(--frame-card);border-radius:8px;padding:10px 12px}
+.tc-label{font-size:var(--fs-xs);color:var(--c3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;font-family:'JetBrains Mono',monospace}
+.tc-row{display:flex;align-items:baseline;gap:6px;margin-bottom:1px}
+.tc-val{font-family:'JetBrains Mono',monospace;font-size:var(--ct-lg);font-weight:var(--fw-s);color:var(--c1);line-height:1}
+.tc-unit{font-size:var(--fs-sm);color:var(--c3)}
+.tc-sub{font-size:var(--fs-xs);color:var(--c3);margin-top:2px;line-height:1.3}
 .tc-note{background:var(--frame-card);border-radius:10px;padding:14px 16px;border-left:3px solid var(--accent);border-top-left-radius:0;border-bottom-left-radius:0}
 .tc-note-text{font-size:var(--ct-xs);color:var(--c2);line-height:1.5;font-style:italic}
 .tc-note-author{font-size:var(--fs-sm);color:var(--c3);margin-top:6px;font-family:'JetBrains Mono',monospace}
@@ -98,10 +98,10 @@ select.filter:focus{border-color:var(--accent)}select.filter option{background:v
 .feed-wrap::-webkit-scrollbar{width:4px}.feed-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.06);border-radius:4px}
 
 /* Day header (Registre section-label pattern) */
-.day-label{font-size:var(--fs-xs);font-weight:var(--fw-s);color:var(--c3);text-transform:uppercase;letter-spacing:.1em;padding:16px 0 8px;display:flex;align-items:center;gap:8px}
+.day-label{font-size:var(--fs-xs);font-weight:var(--fw-s);color:var(--c3);text-transform:uppercase;letter-spacing:.1em;padding:10px 0 6px;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:5;background:linear-gradient(180deg,var(--bg-top) 60%,transparent)}
 .day-label:first-child{padding-top:4px}
 .day-label::after{content:'';flex:1;height:1px;background:var(--c4)}
-.day-today{color:var(--accent)}
+.day-today{color:var(--accent);background:linear-gradient(180deg,var(--bg-top) 60%,transparent)}
 
 /* Content card (Registre slot pattern) */
 .cc{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--frame-card);border-radius:10px;margin-bottom:4px;cursor:pointer;transition:all .12s;border:1px solid transparent}
@@ -435,17 +435,17 @@ function buildTopCards(){
     const cap=count<=2?'green':count<=4?'amber':'red';
     const barW=Math.min(count*18,100);
     const barCol=cap==='green'?'var(--green)':cap==='amber'?'var(--amber)':'var(--red)';
-    return `<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
-      <div class="av" style="width:20px;height:20px;font-size:8px;background:${grd(t.id)};flex-shrink:0">${ini(t.prenom,t.nom)}</div>
-      <div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.06)"><div style="height:100%;border-radius:2px;width:${barW}%;background:${barCol}"></div></div>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--c1);min-width:14px;text-align:right">${count}</span>
+    return `<div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
+      <div class="av" style="width:18px;height:18px;font-size:7px;background:${grd(t.id)};flex-shrink:0">${ini(t.prenom,t.nom)}</div>
+      <div style="flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.06)"><div style="height:100%;border-radius:2px;width:${barW}%;background:${barCol}"></div></div>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--c1);min-width:12px;text-align:right">${count}</span>
     </div>`;
   }).join('');
 
   document.getElementById('topCards').innerHTML=`<div class="top-cards">
     <div class="tc"><div class="tc-label">Cette semaine</div><div class="tc-row"><div class="tc-val">${thisWeek.length}</div><div class="tc-unit">contenus planifiés</div></div><div class="tc-sub">${postCount} Posts · ${reelCount} Réels · ${newsCount} News. · ${pressCount} Presse</div></div>
     <div class="tc"><div class="tc-label">À traiter</div><div class="tc-row"><div class="tc-val" style="color:${overdue?'var(--red)':'var(--green)'}">${overdue}</div><div class="tc-unit">en retard</div></div><div class="tc-sub" style="color:var(--amber)">${toValidate} à valider · ${inProd} en production</div></div>
-    <div class="tc" style="cursor:pointer" onclick="openCharge()"><div class="tc-label">Charge équipe</div>${chargeRows}<div style="font-size:var(--fs-xs);color:var(--accent);margin-top:4px;text-align:right">Voir détails →</div></div>
+    <div class="tc" style="cursor:pointer" onclick="openCharge()"><div class="tc-label">Charge équipe</div>${chargeRows}<div style="font-size:9px;color:var(--accent);margin-top:2px;text-align:right">Détails →</div></div>
   </div>`;
 }
 
