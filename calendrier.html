@@ -168,6 +168,8 @@ select.filter:focus{border-color:var(--accent)}select.filter option{background:v
 .f select{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(255,255,255,.4)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:24px}
 .f select option{background:var(--frame);color:var(--c2)}
 .f textarea{resize:vertical;min-height:50px}
+.f-ta{width:100%;padding:10px;border:1px solid var(--c4);border-radius:6px;background:var(--frame-input);font-family:'Outfit',sans-serif;font-size:var(--ct-sm);color:var(--c1);outline:none;min-height:100px;resize:vertical;transition:border-color .15s}
+.f-ta:focus{border-color:var(--accent)}.f-ta::placeholder{color:var(--c3)}
 .rp-footer{padding:10px 18px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;flex-shrink:0}
 .rp-footer .btn-primary{flex:1;justify-content:center;padding:7px 14px;font-size:var(--ct-sm)}
 .btn-sm-d{background:none;border:1px solid rgba(237,66,69,.25);border-radius:6px;padding:7px 12px;font-family:'Outfit',sans-serif;font-size:var(--ct-xs);font-weight:var(--fw-s);color:var(--red);cursor:pointer;transition:all .14s}
@@ -179,9 +181,33 @@ select.filter:focus{border-color:var(--accent)}select.filter option{background:v
 .ch-tog.on{border-color:currentColor}
 .ch-tog[data-ch="Post"].on{background:rgba(88,101,242,.12);color:#7c8af2;border-color:rgba(88,101,242,.3)}
 .ch-tog[data-ch="Réel"].on{background:rgba(59,165,93,.12);color:#5cc77a;border-color:rgba(59,165,93,.3)}
+.ch-tog[data-ch="Story"].on{background:rgba(245,166,35,.12);color:var(--amber);border-color:rgba(245,166,35,.3)}
 .ch-tog[data-ch="Newsletter"].on{background:rgba(245,166,35,.12);color:var(--amber);border-color:rgba(245,166,35,.3)}
 .ch-tog[data-ch="Presse"].on{background:rgba(155,89,182,.12);color:#c490e0;border-color:rgba(155,89,182,.3)}
 .ch-tog[data-ch="Ads"].on{background:rgba(237,66,69,.12);color:#f08080;border-color:rgba(237,66,69,.3)}
+/* Platform mini pills */
+.plat-toggles{display:flex;gap:5px;flex-wrap:wrap;padding:4px 0}
+.plat-tog{padding:4px 9px;border-radius:5px;border:1px solid var(--c4);font-size:var(--fs-sm);font-weight:var(--fw-s);color:var(--c3);cursor:pointer;transition:all .14s;background:transparent}
+.plat-tog:hover{border-color:var(--c3);color:var(--c2)}
+.plat-tog.on{background:rgba(255,255,255,.08);color:var(--c1);border-color:rgba(255,255,255,.2)}
+/* 3-track status pipeline */
+.pipeline{display:flex;flex-direction:column;gap:10px;padding:4px 0}
+.pipe-track{display:flex;flex-direction:column;gap:4px}
+.pipe-label{font-size:var(--fs-xs);font-weight:var(--fw-s);color:var(--c3);text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:6px}
+.pipe-steps{display:flex;gap:3px}
+.pipe-step{flex:1;padding:6px 0;text-align:center;font-size:var(--fs-sm);font-weight:var(--fw-s);border-radius:5px;cursor:pointer;transition:all .14s;border:1px solid transparent}
+.pipe-step.off{background:rgba(255,255,255,.04);color:var(--c3);border-color:var(--c4)}
+.pipe-step.off:hover{background:rgba(255,255,255,.08);color:var(--c2)}
+.pipe-step.on-green{background:rgba(59,165,93,.15);color:var(--green);border-color:rgba(59,165,93,.3)}
+.pipe-step.on-amber{background:rgba(245,166,35,.15);color:var(--amber);border-color:rgba(245,166,35,.3)}
+.pipe-step.on-blue{background:rgba(88,101,242,.15);color:var(--blue);border-color:rgba(88,101,242,.3)}
+.pipe-step.on-red{background:rgba(237,66,69,.15);color:var(--red);border-color:rgba(237,66,69,.3)}
+.pipe-step.on-accent{background:rgba(212,82,42,.15);color:var(--accent);border-color:rgba(212,82,42,.3)}
+/* Role badge on assignee */
+.role-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:var(--fs-xs);font-weight:var(--fw-s)}
+.role-resp{background:rgba(212,82,42,.12);color:var(--accent)}
+.role-exec{background:rgba(88,101,242,.12);color:#7c8af2}
+.role-ext{background:rgba(155,89,182,.12);color:#c490e0}
 /* Magic link */
 .ml-box{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--frame-input);border:1px solid var(--c4);border-radius:8px;margin-top:6px}
 .ml-url{flex:1;font-family:'JetBrains Mono',monospace;font-size:var(--fs-sm);color:var(--c3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -492,37 +518,74 @@ function openItem(id){
 }
 
 /* ── Panel builders (shared with Campagnes) ── */
+const FAB_STEPS={a_faire:'À faire',en_cours:'En cours',pret:'Prêt'};
+const FAB_CLS={a_faire:'on-blue',en_cours:'on-amber',pret:'on-green'};
+const VAL_STEPS={en_attente:'En attente',valide:'Validé',retour:'Retour'};
+const VAL_CLS={en_attente:'on-amber',valide:'on-green',retour:'on-red'};
+const CONTENT_TYPES=['Carrousel','Photo','Vidéo','Article','Jeu concours','Texte'];
+const PLATFORMS=['Instagram','Facebook','TikTok','LinkedIn','Brevo','DICE','Web'];
+
 function panelContenu(item){
   const v=item||{};
-  const chans=['Post','Réel','Newsletter','Presse','Ads'];
+  const chans=['Post','Réel','Story','Newsletter','Presse','Ads'];
   const chanToggles=chans.map(c=>`<div class="ch-tog${(v.channels||[]).includes(c)?' on':''}" data-ch="${c}" onclick="this.classList.toggle('on')">${c}</div>`).join('');
-  const refsHtml=(v.refs||[]).map(r=>`<div style="padding:6px 10px;background:rgba(255,255,255,.04);border-radius:6px;font-size:var(--ct-xs);color:var(--c2);margin-bottom:4px">${r}</div>`).join('');
+  const platToggles=PLATFORMS.map(p=>`<div class="plat-tog${(v.platforms||[]).includes(p)?' on':''}" onclick="this.classList.toggle('on')">${p}</div>`).join('');
 
   return `<div class="rp-panel active" id="rp-ct">
 <div class="fs"><div class="fs-t">Brief</div>
   <div class="f" style="margin-bottom:10px"><label>Titre</label><input value="${v.title||''}" placeholder="Titre du contenu…"></div>
   <div class="f" style="margin-bottom:10px"><label>Canaux</label><div class="ch-toggles">${chanToggles}</div></div>
-  <div class="f"><label>Lié à la billetterie</label><select><option${!v.billetterie?' selected':''}>Non</option><option${v.billetterie?' selected':''}>Oui</option></select></div>
+  <div class="f" style="margin-bottom:10px"><label>Plateformes</label><div class="plat-toggles">${platToggles}</div></div>
+  <div class="fg">
+    <div class="f"><label>Format</label><select>${CONTENT_TYPES.map(t=>`<option${(v.content_type||'')===t?' selected':''}>${t}</option>`).join('')}</select></div>
+    <div class="f"><label>Billetterie</label><select><option${!v.billetterie?' selected':''}>Non</option><option${v.billetterie?' selected':''}>Oui</option></select></div>
+  </div>
 </div>
 <div class="fs"><div class="fs-t">Caption / texte du post</div>
-  <textarea style="width:100%;padding:10px;border:1px solid var(--c4);border-radius:6px;background:var(--frame-input);font-family:'Outfit',sans-serif;font-size:var(--ct-sm);color:var(--c1);outline:none;min-height:100px;resize:vertical" placeholder="Texte du post, caption Instagram, accroche newsletter…">${v.caption||''}</textarea>
+  <textarea class="f-ta" placeholder="Texte du post, caption Instagram, accroche newsletter…">${v.caption||''}</textarea>
+</div>
+<div class="fs"><div class="fs-t">Message clé</div>
+  <input style="width:100%;padding:8px 10px;border:1px solid var(--c4);border-radius:6px;background:var(--frame-input);font-family:'Outfit',sans-serif;font-size:var(--ct-sm);color:var(--c1);outline:none" value="${v.message_cle||''}" placeholder="L'idée principale en une phrase…">
+</div>
+<div class="fs"><div class="fs-t">Hashtags</div>
+  <input style="width:100%;padding:8px 10px;border:1px solid var(--c4);border-radius:6px;background:var(--frame-input);font-family:'JetBrains Mono',monospace;font-size:var(--ct-xs);color:var(--c2);outline:none" value="${v.hashtags||''}" placeholder="#MadameLoyal #Bordeaux …">
 </div>
 <div class="fs"><div class="fs-t">Notes internes</div>
-  <textarea style="width:100%;padding:10px;border:1px solid var(--c4);border-radius:6px;background:var(--frame-input);font-family:'Outfit',sans-serif;font-size:var(--ct-sm);color:var(--c1);outline:none;min-height:60px;resize:vertical" placeholder="Notes pour l'équipe…">${v.notes||''}</textarea>
+  <textarea class="f-ta" style="min-height:60px" placeholder="Notes pour l'équipe…">${v.notes||''}</textarea>
 </div>
 <div class="fs"><div class="fs-t">Références visuelles</div>
-  ${refsHtml}
-  <div class="upload-zone" style="margin-top:6px">
+  <div class="upload-zone">
     <div style="font-size:var(--ct-xs);color:var(--c3)">Glisser ou cliquer pour uploader</div>
     <div style="font-size:var(--fs-xs);color:var(--c3);opacity:.5;margin-top:3px">Images, vidéos, PDF · 10 MB max</div>
   </div>
   <div class="f" style="margin-top:8px"><label>Lien Dropbox / Drive</label><input placeholder="https://dropbox.com/…" value=""></div>
 </div>
+${v.status==='programme'||v.status==='publie'?`<div class="fs"><div class="fs-t">Post publié</div><div class="f"><label>Lien du post</label><input placeholder="https://instagram.com/p/…" value="${v.post_url||''}"></div></div>`:''}
 </div>`;
 }
 
 function panelPlanning(item){
   const v=item||{};
+
+  /* Pipeline status */
+  const pipeSteps=Object.entries(STATUS_LABEL).map(([k,l])=>{
+    const isOn=k===v.status;
+    const cls=isOn?({idee:'on-blue',brief:'on-amber',en_cours:'on-amber',validation:'on-red',programme:'on-green',publie:'on-accent'}[k]||'on-blue'):'off';
+    return `<div class="pipe-step ${cls}" onclick="this.parentElement.querySelectorAll('.pipe-step').forEach(s=>s.className='pipe-step off');this.className='pipe-step ${cls}'">${l}</div>`;
+  }).join('');
+
+  const fabSteps=Object.entries(FAB_STEPS).map(([k,l])=>{
+    const isOn=k===(v.fab||'a_faire');
+    const cls=isOn?(FAB_CLS[k]||'off'):'off';
+    return `<div class="pipe-step ${cls}" onclick="this.parentElement.querySelectorAll('.pipe-step').forEach(s=>s.className='pipe-step off');this.className='pipe-step ${cls}'">${l}</div>`;
+  }).join('');
+
+  const valSteps=Object.entries(VAL_STEPS).map(([k,l])=>{
+    const isOn=k===(v.val||'en_attente');
+    const cls=isOn?(VAL_CLS[k]||'off'):'off';
+    return `<div class="pipe-step ${cls}" onclick="this.parentElement.querySelectorAll('.pipe-step').forEach(s=>s.className='pipe-step off');this.className='pipe-step ${cls}'">${l}</div>`;
+  }).join('');
+
   return `<div class="rp-panel" id="rp-pl">
 <div class="fs"><div class="fs-t">Dates</div>
   <div class="f" style="margin-bottom:10px"><label>Date de publication</label><input type="date" value="${v.date||''}"></div>
@@ -530,41 +593,67 @@ function panelPlanning(item){
     <div class="f"><label>Heure</label><input type="time" value="${v.time||'18:00'}"></div>
     <div class="f"><label>Priorité</label><select>${['Normal','Urgent','Bloquant'].map(p=>`<option${(v.priority||'Normal')===p?' selected':''}>${p}</option>`).join('')}</select></div>
   </div>
-  <div class="f" style="margin-top:10px"><label>Deadline interne (brief prêt avant)</label><input type="date" value="${v.deadline||''}"></div>
+  <div class="f" style="margin-top:10px"><label>Deadline interne</label><input type="date" value="${v.deadline||''}"></div>
 </div>
-<div class="fs"><div class="fs-t">Workflow</div>
-  <div class="fg">
-    <div class="f"><label>Statut</label><select>${Object.entries(STATUS_LABEL).map(([k,l])=>`<option value="${k}"${k===v.status?' selected':''}>${l}</option>`).join('')}</select></div>
-    <div class="f"><label>Événement</label><select>${Object.entries(EVENTS).map(([k,e])=>`<option value="${k}"${k===v.event?' selected':''}>${e.name}</option>`).join('')}</select></div>
+<div class="fs"><div class="fs-t">Pipeline</div>
+  <div class="pipeline">
+    <div class="pipe-track"><div class="pipe-label">Contenu</div><div class="pipe-steps">${pipeSteps}</div></div>
+    <div class="pipe-track"><div class="pipe-label">Fabrication <span style="font-weight:var(--fw-r);opacity:.6">· visuel / vidéo</span></div><div class="pipe-steps">${fabSteps}</div></div>
+    <div class="pipe-track"><div class="pipe-label">Validation <span style="font-weight:var(--fw-r);opacity:.6">· Greg</span></div><div class="pipe-steps">${valSteps}</div></div>
   </div>
+</div>
+<div class="fs"><div class="fs-t">Événement</div>
+  <select style="width:100%;padding:8px 10px;border:1px solid var(--c4);border-radius:6px;background:var(--frame-input);font-family:'Outfit',sans-serif;font-size:var(--ct-sm);color:var(--c1);outline:none;appearance:none;cursor:pointer;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(255,255,255,.4)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 8px center;padding-right:24px">${Object.entries(EVENTS).map(([k,e])=>`<option value="${k}"${k===v.event?' selected':''}>${e.name}</option>`).join('')}</select>
 </div>
 </div>`;
 }
 
 function panelEquipe(item,assignee,teamOpts){
   const v=item||{};
-  const assigneeCard=assignee?`<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:8px;margin-top:8px"><div class="av av-md" style="background:${grd(assignee.id)}">${ini(assignee.prenom,assignee.nom)}</div><div><div style="font-size:var(--ct-sm);font-weight:var(--fw-s);color:var(--c1)">${assignee.prenom} ${assignee.nom}</div><div style="font-size:var(--ct-xs);color:var(--c3)">${assignee.role}</div></div></div>`:'';
 
-  const teamPills=TEAM.map(t=>`<div style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px 3px 3px;background:rgba(255,255,255,.04);border-radius:16px;font-size:var(--ct-xs);margin:2px"><div class="av av-sm" style="background:${grd(t.id)}">${ini(t.prenom,t.nom)}</div><span style="color:var(--c2)">${t.prenom}</span></div>`).join('');
+  /* Assignee card with role badge */
+  const assigneeCard=assignee?`<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:8px;margin-top:8px">
+    <div class="av av-md" style="background:${grd(assignee.id)}">${ini(assignee.prenom,assignee.nom)}</div>
+    <div style="flex:1"><div style="font-size:var(--ct-sm);font-weight:var(--fw-s);color:var(--c1)">${assignee.prenom} ${assignee.nom}</div><div style="font-size:var(--ct-xs);color:var(--c3)">${assignee.role}</div></div>
+    <span class="role-badge role-exec">Exécutant</span>
+  </div>`:'';
 
+  /* Team with role context */
+  const teamCards=TEAM.map(t=>{
+    const isResp=t.id===55; /* Greg */
+    const isAssigned=t.id===v.assigned_to;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;${isAssigned?'background:rgba(88,101,242,.08);border:1px solid rgba(88,101,242,.15)':'background:rgba(255,255,255,.02)'}">
+      <div class="av av-sm" style="background:${grd(t.id)}">${ini(t.prenom,t.nom)}</div>
+      <div style="flex:1;min-width:0"><div style="font-size:var(--ct-xs);font-weight:var(--fw-s);color:${isAssigned?'var(--c1)':'var(--c2)'}">${t.prenom} ${t.nom}</div><div style="font-size:var(--fs-xs);color:var(--c3)">${t.role}</div></div>
+      ${isResp?'<span class="role-badge role-resp">Dir.</span>':isAssigned?'<span class="role-badge role-exec">Assigné</span>':''}
+    </div>`;
+  }).join('');
+
+  /* Comments */
   const comments=v.status&&v.status!=='idee'?`
-    <div class="cmt"><div class="av av-sm" style="background:${AG[0]}">${ini('Kenza','B')}</div><div class="cmt-body"><div class="cmt-head"><span class="cmt-name">Kenza B.</span><span class="cmt-time">19 mar · 14:32</span></div><div class="cmt-text">Ok pour le brief, je lance la création.</div></div></div>
-    <div class="cmt"><div class="av av-sm" style="background:${AG[2]}">${ini('Antoine','M')}</div><div class="cmt-body"><div class="cmt-head"><span class="cmt-name">Antoine M.</span><span class="cmt-time">19 mar · 15:10</span></div><div class="cmt-text">Visuels ajoutés dans le Dropbox. À valider.</div></div></div>`:'<div style="color:var(--c3);font-size:var(--ct-xs);padding:6px 0">Aucun commentaire</div>';
+    <div class="cmt"><div class="av av-sm" style="background:${AG[4]}">${ini('Greg','G')}</div><div class="cmt-body"><div class="cmt-head"><span class="cmt-name">Greg G.</span><span class="cmt-time">19 mar · 10:15</span></div><div class="cmt-text">Brief envoyé. Lola, tu peux lancer le visuel ? Refs dans le Dropbox.</div></div></div>
+    <div class="cmt"><div class="av av-sm" style="background:${AG[1]}">${ini('Lola','D')}</div><div class="cmt-body"><div class="cmt-head"><span class="cmt-name">Lola D.</span><span class="cmt-time">19 mar · 14:32</span></div><div class="cmt-text">C'est parti, je fais une première version ce soir.</div></div></div>`:'<div style="color:var(--c3);font-size:var(--ct-xs);padding:6px 0">Aucun commentaire</div>';
 
   return `<div class="rp-panel" id="rp-eq">
-<div class="fs"><div class="fs-t">Responsable</div>
+<div class="fs"><div class="fs-t">Responsable & Assignation</div>
   <div class="fg">
     <div class="f"><label>Entité</label><select>${['ML','EPK','ML × EPK','Sonora','Culturel Paris'].map(o=>`<option${o===v.owner?' selected':''}>${o}</option>`).join('')}</select></div>
     <div class="f"><label>Assigné à</label><select><option value="">— Non assigné —</option>${teamOpts}</select></div>
   </div>
   ${assigneeCard}
+  <div style="font-size:var(--fs-xs);color:var(--c3);margin-top:4px;font-style:italic">Le responsable brief et valide · l'assigné exécute et livre</div>
 </div>
-<div class="fs"><div class="fs-t">Équipe comm · ${TEAM.length} membres</div>
-  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">${teamPills}</div>
+<div class="fs"><div class="fs-t">Équipe comm</div>
+  <div style="display:flex;flex-direction:column;gap:4px">${teamCards}</div>
 </div>
-<div class="fs"><div class="fs-t">Magic link collaborateur</div>
-  <div style="font-size:var(--ct-xs);color:var(--c3);margin-bottom:4px">Lien pour un collaborateur externe — pas besoin de compte</div>
-  <div class="ml-box"><div class="ml-url">app.festiflow.com/collab/${v.id||'…'}/xK9m2</div><button class="ml-btn ml-copy" onclick="copyLink(this)">Copier</button><button class="ml-btn ml-send">Envoyer</button></div>
+<div class="fs"><div class="fs-t">Collaborateurs externes</div>
+  <div style="font-size:var(--ct-xs);color:var(--c3);margin-bottom:6px">Partager avec un partenaire ou prestataire</div>
+  <div class="ml-box"><div class="ml-url">app.festiflow.com/share/${v.id||'…'}/xK9m2</div><button class="ml-btn ml-copy" onclick="copyLink(this)">Copier</button><button class="ml-btn ml-send">Envoyer</button></div>
+  ${v.owner&&v.owner.includes('EPK')?`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(155,89,182,.06);border:1px solid rgba(155,89,182,.15);border-radius:8px;margin-top:8px">
+    <div style="width:28px;height:28px;border-radius:6px;background:rgba(155,89,182,.15);display:flex;align-items:center;justify-content:center;font-size:var(--fs-xs);font-weight:var(--fw-b);color:#c490e0;flex-shrink:0">EP</div>
+    <div style="flex:1"><div style="font-size:var(--ct-xs);font-weight:var(--fw-s);color:var(--c1)">Équipe EPK</div><div style="font-size:var(--fs-xs);color:var(--c3)">Co-production · lien partagé actif</div></div>
+    <span class="role-badge role-ext">Externe</span>
+  </div>`:''}
 </div>
 <div class="fs"><div class="fs-t">Discussion</div>
   ${comments}
@@ -575,6 +664,10 @@ function panelEquipe(item,assignee,teamOpts){
 
 function panelBudget(item){
   const v=item||{};
+  const hasAds=(v.channels||[]).includes('Ads');
+  const hasVideo=(v.content_type==='Vidéo');
+  const hasPress=(v.channels||[]).includes('Presse');
+
   return `<div class="rp-panel" id="rp-bu">
 <div class="fs"><div class="fs-t">Coûts</div>
   <div class="fg">
@@ -582,7 +675,14 @@ function panelBudget(item){
     <div class="f"><label>Dépensé</label><input type="text" value="${v.budget_real||''}" placeholder="0 €"></div>
   </div>
   <div class="f" style="margin-top:10px"><label>Catégorie</label><select>${['— Sélectionner —','Production','Ads','Influence','Presse','Scénographie','Autre'].map(o=>`<option${(v.budget_cat||'')=== o?' selected':''}>${o}</option>`).join('')}</select></div>
-  <div class="f" style="margin-top:10px"><label>Lien BudgetFlow</label><input placeholder="Ligne budget globale…" value=""></div>
+</div>
+${hasAds||hasVideo||hasPress?`<div class="fs"><div class="fs-t">Détail contexte</div>
+  ${hasAds?'<div class="fg" style="margin-bottom:6px"><div class="f"><label>Budget Ads (Meta/Google)</label><input placeholder="0 €"></div><div class="f"><label>Durée campagne</label><input placeholder="7 jours"></div></div>':''}
+  ${hasVideo?'<div class="fg" style="margin-bottom:6px"><div class="f"><label>Vidéaste</label><input placeholder="Jules · tarif jour" value="Jules Petit"></div><div class="f"><label>Jours de tournage</label><input type="number" value="1" min="0"></div></div>':''}
+  ${hasPress?'<div class="fg"><div class="f"><label>Média</label><input placeholder="Nom du média" value=""></div><div class="f"><label>Coût placement</label><input placeholder="0 €"></div></div>':''}
+</div>`:''}
+<div class="fs"><div class="fs-t">Liens</div>
+  <div class="f"><label>Ligne BudgetFlow</label><input placeholder="Lien vers le budget global…" value=""></div>
 </div>
 <div class="fs"><div class="fs-t">Justificatifs</div>
   <div class="upload-zone">
@@ -590,7 +690,6 @@ function panelBudget(item){
     <div style="font-size:var(--fs-xs);color:var(--c3);opacity:.5;margin-top:3px">Facture, devis, justificatif · PDF, JPG</div>
   </div>
 </div>
-<div style="padding:12px 0;text-align:center;font-size:var(--ct-xs);color:var(--c3);opacity:.5">Module Budget complet version serveur</div>
 </div>`;
 }
 
